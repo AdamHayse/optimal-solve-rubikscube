@@ -1,6 +1,6 @@
 #define NUM_CORNERS  8U
-#define NUM_FACES   3U
-
+#define NUM_CFACES   3U
+#define C_DB_SIZE 44089920
 
 uint8_t C_path_length(uint8_t *comb, uint8_t *data);
 unsigned C_get_index(uint8_t *comb);
@@ -24,12 +24,12 @@ unsigned C_get_index(uint8_t *comb) {
   for (i=NUM_CORNERS; i>1; i--)
     add += fact(i-1) * C_lex_pos(comb+NUM_CORNERS-i, i-1);
 
-  // Scale by NUM_FACES to the NUM_CORNERS-1 power for permutation offset.
-  add *= power(NUM_FACES, NUM_CORNERS-1);
+  // Scale by NUM_CFACES to the NUM_CORNERS-1 power for permutation offset.
+  add *= power(NUM_CFACES, NUM_CORNERS-1);
 
   // Calculate which orientation number for orientation offset.
   for (i=0; i<NUM_CORNERS-1; i++)
-    add += comb[i] % NUM_FACES * power(NUM_FACES, NUM_CORNERS-i-2);
+    add += comb[i] % NUM_CFACES * power(NUM_CFACES, NUM_CORNERS-i-2);
   return add;
 }
 
@@ -37,8 +37,9 @@ unsigned C_get_index(uint8_t *comb) {
 unsigned C_lex_pos(uint8_t *comb, unsigned remain) {
   unsigned pos = 0, i;
   for (i=1; i<=remain; i++)
-    if (*comb > *(comb+i))
+    if (comb[0] > comb[i])
       pos++;
   return pos;
 }
+
 

@@ -40,12 +40,10 @@
 #include <unistd.h>
 #include "moves.h"
 #include "mymath.h"
-#include "cdatabase.h"
-// 48022317 <- largest the queue gets
-#define Q_BUF_SIZE  88000000
+#include "database.h"
 
-static uint8_t database[44089920];
-static uint8_t queue[Q_BUF_SIZE][NUM_CORNERS];
+static uint8_t database[C_DB_SIZE];
+static uint8_t queue[C_DB_SIZE*2][NUM_CORNERS];
 static unsigned head;
 static unsigned queuesize;
 static unsigned depth;
@@ -57,12 +55,12 @@ int main() {
   // Set first entry to 0 and all other states to 0xFF.
   database[0] = 0x0F;
   int i;
-  for (i=1; i<44089820; i++)
+  for (i=1; i<C_DB_SIZE; i++)
     database[i] = 0xFF;
 
   // Add first combination to the queue.
-  for (i=0; i<8; i++)
-    queue[0][i] = 3*i;
+  for (i=0; i<NUM_CORNERS; i++)
+    queue[0][i] = NUM_CFACES*i;
 
   // Add 0xFF to signal increase in depth.
   queue[1][0] = 0xFF;
@@ -74,6 +72,9 @@ int main() {
 
   // Put all turn functions in a static array of functions called moves.
   initialize_turns();
+
+  // Show progress tracker.
+  display_percent();
 
   // Continue BFS until only element in queue is 0xFF.
   while (1) {
@@ -87,10 +88,10 @@ int main() {
       depth++;
 
       // Place another 0xFF at end of queue to signal change in depth.
-      queue[(head+queuesize)%Q_BUF_SIZE][0] = 0xFF;
+      queue[(head+queuesize)%(C_DB_SIZE*2)][0] = 0xFF;
 
       // Move head of queue past the depth change signal.
-      head = (head+1)%Q_BUF_SIZE;
+      head = (head+1)%(C_DB_SIZE*2);
     }
     else
       breadth_first_search();
@@ -98,22 +99,23 @@ int main() {
 
   // Write database to a file.
   int fd = creat("corners.patdb", 0644);
-  write(fd, database, 44089920);
+  write(fd, database, C_DB_SIZE);
   close(fd);
+  printf("\rDatabase generation 100%%\nDone.\n");
 }
 
 void breadth_first_search() {
 
   // Add NEW combinations to the end of the queue
-  int i, j=0;
+  int i;
   unsigned index, add, pos;
   for (i=0; i<18; i++) {
 
     // Put candidate combination at end of queue.
-    (*moves[i])(queue[head], queue[(head+queuesize)%Q_BUF_SIZE]);
+    (*moves[i])(queue[head], queue[(head+queuesize)%(C_DB_SIZE*2)]);
 
     // If combination hasn't been seen, keep it in the queue.
-    index = C_get_index(queue[(head+queuesize)%Q_BUF_SIZE]);
+    index = C_get_index(queue[(head+queuesize)%(C_DB_SIZE*2)]);
     add = index / 2;
     pos = index % 2;
     if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
@@ -126,10 +128,15 @@ void breadth_first_search() {
         database[add] = database[add] & depth + 0xF0;
       else
         database[add] = database[add] & (depth << 4) + 0xF;
+
+      // Increase fill amount.
+      fill_amount++;
+      if ((double)fill_amount / (C_DB_SIZE * 2) > fill_percent + .01)
+        update_percent();
     }
   }
 
   // Manage queue.
-  head = (head+1)%Q_BUF_SIZE;  // Circular array.
+  head = (head+1)%(C_DB_SIZE*2);  // Circular array.
   queuesize--;
 }
