@@ -144,6 +144,7 @@ int main() {
 
     // Print resulting combination and database results.
     display_cube(corners[i], edges[i]);
+
   }
 }
 

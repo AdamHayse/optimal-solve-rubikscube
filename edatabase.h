@@ -55,8 +55,8 @@ unsigned E2_get_index(uint8_t *comb) {
   unsigned i, add = 0;
 
   // Calculate permutation number.
-  for (i=NUM_EDGES-1; i>5; i--)
-    add += E2_get_loc(comb, i) * (fact(i)/fact(6));
+  for (i=6; i<NUM_EDGES; i++)
+    add += E2_get_loc(comb, i) * (fact(NUM_EDGES-i+5)/fact(6));
 
   // Scale by NUM_EFACES to the NUM_EDGES-6 power for permutation offset.
   add *= power(NUM_EFACES, NUM_EDGES-6);
@@ -75,6 +75,7 @@ unsigned E2_get_index(uint8_t *comb) {
 // Get location of edge among remaining edges.
 unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
   unsigned i, loc=0;
+
   for (i=0; i<NUM_EDGES; i++) {
     // Increment if piece is larger than tested edge.
     if (comb[i]/2 > edge)
@@ -86,11 +87,11 @@ unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
 
 unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
   unsigned i, loc=0;
-  for (i=0; i<NUM_EDGES; i++) {
+  for (i=6; i<NUM_EDGES+6; i++) {
     // Increment if piece is smaller than tested edge.
-    if (comb[i]/2 < edge)
+    if ((comb[i%NUM_EDGES]/2-6)%12 > (edge+6)%NUM_EDGES)
       loc++;
-    if (comb[i]/2 == edge)
+    if (comb[i%NUM_EDGES]/2 == edge)
       return loc;
   }
 }
