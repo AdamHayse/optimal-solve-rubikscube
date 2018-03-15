@@ -58,6 +58,7 @@ int main() {
     uint8_t corners[128][8];
     for (i=0; i<8; i++)
       corners[0][i] = 3*i;
+
     uint8_t edges[128][12];
     for (i=0; i<12; i++)
       edges[0][i] = 2*i;
@@ -144,7 +145,15 @@ int main() {
 
     // Print resulting combination and database results.
     display_cube(corners[i], edges[i]);
+    int k;
+    for (k=0; k<8; k++)
+      printf("%u, ", corners[i][k]/3);
+    printf("\n");
+    for (k=0; k<12; k++)
+      printf("%u, ", edges[i][k]/2);
+    printf("\n");
 
+    printf("%u", valid_comb(corners[i], edges[i]));
   }
 }
 

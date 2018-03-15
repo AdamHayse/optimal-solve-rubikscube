@@ -105,7 +105,7 @@ void C_turn_Fprime(uint8_t *comb, uint8_t *next) {
 }
 
 void C_turn_L(uint8_t *comb, uint8_t *next) {
-  next[0] = (comb[1])%3+1 ? comb[1]+1 : comb[1]-2;
+  next[0] = (comb[1]+1)%3 ? comb[1]+1 : comb[1]-2;
   next[1] = comb[5]%3 ? comb[5]-1 : comb[5]+2;
   next[2] = comb[2];
   next[3] = comb[3];
