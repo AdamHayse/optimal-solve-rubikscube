@@ -5,6 +5,7 @@
 uint8_t C_path_length(uint8_t *comb, uint8_t *data);
 unsigned C_get_index(uint8_t *comb);
 unsigned C_lex_pos(uint8_t *comb, unsigned remain);
+void get_comb(unsigned index);
 
 // Retrieve stored path length from database.
 uint8_t C_path_length(uint8_t *comb, uint8_t *database) {
@@ -41,5 +42,17 @@ unsigned C_lex_pos(uint8_t *comb, unsigned remain) {
       pos++;
   return pos;
 }
+/*
+uint8_t C_node[8];
+void C_get_comb(unsigned index) {
 
+  // Find corner orientations.
+  unsigned i, orien = index%power(3,7);
+  index /= power(3,7);
+  for (i=7; i<=0; i--) {
+    C_node[i] = orien%3 + index / fact(i);
+    orien /= 3;
+    index %= fact(i);
+  }
 
+} */

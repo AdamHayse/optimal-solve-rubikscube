@@ -85,6 +85,7 @@ unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
   }
 }
 
+// There is something wrong with this I think.
 unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
   unsigned i, loc=0;
   for (i=6; i<NUM_EDGES+6; i++) {

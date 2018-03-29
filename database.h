@@ -19,17 +19,17 @@ void display_percent() {
   fflush(stdout);
 }
 
-// Returns 1 if valid, 0 if invalid.
+// Returns 1 if solvable, 0 if unsolvable.
 unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
 
-  // Check corner orientation.
+  // Test 1: Check corner orientation.
   int8_t i, test1=0;
   for (i=0; i<NUM_CORNERS; i++)
     test1 += corners[i];
   if (test1 % 3)
     return 0;
 
-  // Check edge orientation.
+  // Test 2: Check edge orientation.
   int test2=0;
   for (i=0; i<NUM_EDGES; i++)
     test2 += edges[i];
@@ -37,12 +37,12 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
     return 0;
 
 
-  // Check edge and corner permutation.
+  // Test 3: Check edge and corner permutation.
   int even_corners=0, even_edges=0, leftmost=0, pos=0, count=0;
   int16_t vis_edges = 0xF000;
   int8_t vis_corners = 0x00;
 
-  // While some corners are still not visited.
+  // Count number of even corner cycles.
   while (vis_corners != -1) {
 
     // If unvisited, Set corner at pos as visited and get new pos.  Increment count.
@@ -62,10 +62,15 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
       pos = leftmost;
     }
   }
+  // If the loop exited and count is positive and even.
+  if (count>0 && count%2==0)
+    even_corners++;
+
+  // Reset values.
   count = leftmost = pos = 0;
   int16_t j;
   
-  // While some edges are still not visited.
+  // Count number of even edge cycles.
   while (vis_edges != -1) {
 
     // If unvisited, Set edge at pos as visited and get new pos.  Increment count.
@@ -86,11 +91,14 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
       pos = leftmost;
     }
   }
+  // If the loop exited and count is positive and even.
+  if (count>0 && count%2==0)
+    even_edges++;
 
-  // Compare.
+  // Not solvable if number of even cycles is not equal.
   if (even_edges%2 != even_corners%2)
     return 0;
     
-  // Solvable.
+  // Passed all 3 tests.  Solvable.
   return 1;
 }
