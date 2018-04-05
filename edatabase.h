@@ -35,16 +35,16 @@ unsigned E1_get_index(uint8_t *comb) {
 
   // Calculate permutation number.
   for (i=0; i<6; i++)
-    add += E1_get_loc(comb, i) * (fact(NUM_EDGES-i-1)/fact(6));
+    add += E1_get_loc(comb, i) * (fact[NUM_EDGES-i-1]/fact[6]);
 
-  // Scale by NUM_EFACES to the NUM_EDGES-6 power for permutation offset.
-  add *= power(NUM_EFACES, NUM_EDGES-6);
+  // Scale for permutation offset.
+  add *= 64;  // power(NUM_EFACES, NUM_EDGES-6) 
 
   // Calculate which orientation number for orientation offset.
   int j=5;
   for (i=0; i<NUM_EDGES; i++)
     if (comb[i]/2 <  6) {
-      add += comb[i] % NUM_EFACES * power(NUM_EFACES, j);
+      add += comb[i] % NUM_EFACES * two_to_the[j];
       j--;
     }
 
@@ -56,16 +56,16 @@ unsigned E2_get_index(uint8_t *comb) {
 
   // Calculate permutation number.
   for (i=6; i<NUM_EDGES; i++)
-    add += E2_get_loc(comb, i) * (fact(NUM_EDGES-i+5)/fact(6));
+    add += E2_get_loc(comb, i) * (fact[NUM_EDGES-i+5]/fact[6]);
 
-  // Scale by NUM_EFACES to the NUM_EDGES-6 power for permutation offset.
-  add *= power(NUM_EFACES, NUM_EDGES-6);
+  // Scale for permutation offset.
+  add *= 64;  // power(NUM_EFACES, NUM_EDGES-6) 
 
   // Calculate which orientation number for orientation offset.
   int j=5;
   for (i=0; i<NUM_EDGES; i++)
     if (comb[i]/2 >=  6) {
-      add += comb[i] % NUM_EFACES * power(NUM_EFACES, j);
+      add += comb[i] % NUM_EFACES * two_to_the[j];
       j--;
     }
 
