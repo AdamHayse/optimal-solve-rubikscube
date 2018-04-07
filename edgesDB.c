@@ -74,6 +74,12 @@ int main() {
   for (i=1; i<E_DB_SIZE; i++)
     database[i] = 0xFF;
 
+  #if HALF == 2
+  database[0] = 0xFF;
+  database[21288928] = 0x0F;
+  #endif
+
+
   // Add first combination to the queue.
   for (i=0; i<NUM_EDGES; i++)
     queue[0][i] = NUM_EFACES*i;
@@ -129,7 +135,6 @@ void breadth_first_search() {
 
     // Put candidate combination at end of queue.
     (*moves[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)]);
-
 
     // If combination hasn't been seen, keep it in the queue.
     index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);

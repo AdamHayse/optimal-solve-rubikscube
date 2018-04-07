@@ -1,4 +1,4 @@
-#include <string.h>
+
 
 #define NUM_CORNERS  8U
 #define NUM_CFACES   3U
@@ -6,8 +6,6 @@
 
 uint8_t C_path_length(uint8_t *comb, uint8_t *data);
 static unsigned C_get_index(uint8_t *comb);
-unsigned C_lex_pos(uint8_t *comb, unsigned remain);
-unsigned C_lex_pos2(unsigned i);
 
 // Retrieve stored path length from database.
 uint8_t C_path_length(uint8_t *comb, uint8_t *database) {
@@ -24,11 +22,11 @@ static unsigned C_get_index(uint8_t *comb) {
   unsigned i, add = 0;
 
   // Calculate which permutation number.
-  unsigned long long state = 0x76543210;
+  unsigned long long state = 0xFEDCBA9876543210;
   for (i=0; i<7; i++) {
     int p4 = comb[i]/3 * 4;
     add += fact[7-i] * (state >> p4 & 15);
-    state -= 0x11111110 << p4;
+    state -= 0x1111111111111110 << p4;
   }
 
   // Scale for permutation offset.
@@ -36,6 +34,10 @@ static unsigned C_get_index(uint8_t *comb) {
 
   // Calculate which orientation number for orientation offset.
   for (i=0; i<7; i++)
-    add += comb[i] % NUM_CFACES * three_to_the[6-i];
+    add += comb[i] % NUM_CFACES * three_to_the[i];
+
+
   return add;
 }
+
+

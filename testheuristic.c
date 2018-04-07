@@ -145,14 +145,6 @@ int main() {
 
     // Print resulting combination and database results.
     display_cube(corners[i], edges[i]);
- /*   int k;
-    for (k=0; k<8; k++)
-      printf("%u, ", corners[i][k]/3);
-    printf("\n");
-    for (k=0; k<12; k++)
-      printf("%u, ", edges[i][k]/2);
-    printf("\n"); */
-
     printf("%u\n", valid_comb(corners[i], edges[i]));
   }
 }
@@ -182,7 +174,7 @@ void display_cube(uint8_t *corners, uint8_t *edges) {
                       "WB", "BW"};
 
   // Assign faces.
-  char face[54];
+  char face[48];
   int i, j;
   for (i=0; i<8; i++)
     for (j=0; j<3; j++) 

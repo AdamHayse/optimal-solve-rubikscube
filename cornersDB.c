@@ -102,6 +102,13 @@ int main() {
   write(fd, database, C_DB_SIZE);
   close(fd);
   printf("\rDatabase generation 100%%\nDone.\n");
+/*
+  for (i=0; i<2187; i++) {
+    if (i%2)
+      printf("%x \n", database[i]&15);
+    else
+      printf("%x \n", database[i]>>4);
+  } */
 }
 
 void breadth_first_search() {
@@ -125,9 +132,9 @@ void breadth_first_search() {
 
       // Add depth to database.
       if (pos)
-        database[add] = database[add] & depth + 0xF0;
+        database[add] = database[add] & (depth | 0xF0);
       else
-        database[add] = database[add] & (depth << 4) + 0xF;
+        database[add] = database[add] & ((depth << 4) | 0xF);
 
       // Increase fill amount.
       fill_amount++;
