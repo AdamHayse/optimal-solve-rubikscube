@@ -14,12 +14,13 @@
 #include <string.h>
 #include "moves.h"
 #include "mymath.h"
-#include "database.h"
+#include "cdatabase.h"
+#include "edatabase.h"
+#include "testheuristic.h"
 
 static uint8_t cdatabase[C_DB_SIZE];
 static uint8_t e1database[E_DB_SIZE];
 static uint8_t e2database[E_DB_SIZE];
-void display_cube(uint8_t *corners, uint8_t *edges);
 
 int main() {
 
@@ -70,76 +71,93 @@ int main() {
       if (strcmp(token, "U") == 0) {
         C_turn_U(corners[i], corners[i+1]);
         E_turn_U(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "U2") == 0) {
         C_turn_U2(corners[i], corners[i+1]);
         E_turn_U2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "U'") == 0) {
         C_turn_Uprime(corners[i], corners[i+1]);
         E_turn_Uprime(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "F") == 0) {
         C_turn_F(corners[i], corners[i+1]);
         E_turn_F(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "F2") == 0) {
         C_turn_F2(corners[i], corners[i+1]);
         E_turn_F2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "F'") == 0) {
         C_turn_Fprime(corners[i], corners[i+1]);
         E_turn_Fprime(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "L") == 0) {
         C_turn_L(corners[i], corners[i+1]);
         E_turn_L(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "L2") == 0) {
         C_turn_L2(corners[i], corners[i+1]);
         E_turn_L2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "L'") == 0) {
         C_turn_Lprime(corners[i], corners[i+1]);
         E_turn_Lprime(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "B") == 0) {
         C_turn_B(corners[i], corners[i+1]);
         E_turn_B(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "B2") == 0) {
         C_turn_B2(corners[i], corners[i+1]);
         E_turn_B2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "B'") == 0) {
         C_turn_Bprime(corners[i], corners[i+1]);
         E_turn_Bprime(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "R") == 0) {
         C_turn_R(corners[i], corners[i+1]);
         E_turn_R(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "R2") == 0) {
         C_turn_R2(corners[i], corners[i+1]);
         E_turn_R2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "R'") == 0) {
         C_turn_Rprime(corners[i], corners[i+1]);
         E_turn_Rprime(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "D") == 0) {
         C_turn_D(corners[i], corners[i+1]);
         E_turn_D(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "D2") == 0) {
         C_turn_D2(corners[i], corners[i+1]);
         E_turn_D2(edges[i], edges[i+1]);
+        i++;
       }
       else if (strcmp(token, "D'") == 0) {
         C_turn_Dprime(corners[i], corners[i+1]);
         E_turn_Dprime(edges[i], edges[i+1]);
+        i++;
       }
-      i++;
       token = strtok(NULL, " \n()[]\t{}");
     }
 
@@ -149,6 +167,7 @@ int main() {
   }
 }
 
+// Creates an ASCII representation of the cube in the CLI.
 void display_cube(uint8_t *corners, uint8_t *edges) {
 
   // Set up cubies.
@@ -209,4 +228,89 @@ void display_cube(uint8_t *corners, uint8_t *edges) {
   printf("              | %c | %c | %c |     ",face[15],face[44],face[18]);
   printf("%u moves to solve edges 7-12.\n",E2_path_length(edges, e2database));
   printf("               -----------\n\n");
+}
+
+/* Checks to see if a given combination of the cube is
+   a member of the subgraph that contains the solution state. */
+unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
+
+  // Test 1: Check corner orientation.
+  int8_t i, test1=0;
+  for (i=0; i<NUM_CORNERS; i++)
+    test1 += corners[i];
+  if (test1 % 3)
+    return 0;
+
+  // Test 2: Check edge orientation.
+  int test2=0;
+  for (i=0; i<NUM_EDGES; i++)
+    test2 += edges[i];
+  if (test2 % 2)
+    return 0;
+
+
+  // Test 3: Check edge and corner permutation.
+  int even_corners=0, even_edges=0, leftmost=0, pos=0, count=0;
+  int16_t vis_edges = 0xF000;
+  int8_t vis_corners = 0x00;
+
+  // Count number of even corner cycles.
+  while (vis_corners != -1) {
+
+    // If unvisited, Set corner at pos as visited and get new pos.  Increment count.
+    if (!(vis_corners & 1 << 7 - pos)) {
+      vis_corners = vis_corners | 1 << 7 - pos;
+      pos = corners[pos]/3;
+      count++;
+    }
+    // If pos was visited, end of cycle.  see if count if even.  increment if it is. set count to 0 again.
+    else {
+      if (count%2 == 0)
+        even_corners++;
+      count = 0;
+      // Increment leftmost until there is a pos that is unvisited.  Set new pos.
+      for (i=vis_corners<<leftmost; i < 0; leftmost++)
+        i = i << 1;
+      pos = leftmost;
+    }
+  }
+  // If the loop exited and count is positive and even.
+  if (count>0 && count%2==0)
+    even_corners++;
+
+  // Reset values.
+  count = leftmost = pos = 0;
+  int16_t j;
+  
+  // Count number of even edge cycles.
+  while (vis_edges != -1) {
+
+    // If unvisited, Set edge at pos as visited and get new pos.  Increment count.
+    if (!(vis_edges & 1 << 11 - pos)) {
+      vis_edges = vis_edges | 1 << 11 - pos;
+      pos = edges[pos]/2;
+      count++;
+    }
+    // If pos was visited, end of cycle.  see if count if even.  increment if it is. set count to 0 again.
+    else {
+      if (count%2 == 0)
+        even_edges++;
+      count = 0;
+
+      // Increment leftmost until there is a pos that is unvisited.  Set new pos.
+      for (j=vis_edges<<4+leftmost; j < 0; leftmost++)
+        j = j << 1;
+      pos = leftmost;
+    }
+  }
+  // If the loop exited and count is positive and even.
+  if (count>0 && count%2==0)
+    even_edges++;
+
+  // Not solvable if number of even cycles is not equal.
+  if (even_edges%2 != even_corners%2)
+    return 0;
+    
+  // Passed all 3 tests.  Solvable.
+  return 1;
 }
