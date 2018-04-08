@@ -6,23 +6,25 @@
  *  Example: (R U R' U') (R' F R2 U') R' U' (R U R' F')
  */
 
+#include "testheuristic.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+
 #include "moves.h"
 #include "mymath.h"
 #include "cdatabase.h"
 #include "edatabase.h"
-#include "testheuristic.h"
 
 static uint8_t cdatabase[C_DB_SIZE];
 static uint8_t e1database[E_DB_SIZE];
 static uint8_t e2database[E_DB_SIZE];
 
-int main() {
+int main(void) {
 
   // Load databases.
   int fd;
@@ -55,18 +57,17 @@ int main() {
     fgets(scramble, 256, stdin);
 
     // Initialize cube as solved.
-    int i;
     uint8_t corners[128][8];
-    for (i=0; i<8; i++)
+    for (uint8_t i=0; i<8; i++)
       corners[0][i] = 3*i;
 
     uint8_t edges[128][12];
-    for (i=0; i<12; i++)
+    for (uint8_t i=0; i<12; i++)
       edges[0][i] = 2*i;
 
     // Tokenize user input and perform moves.
     char* token = strtok(scramble, " \n()[]\t{}");
-    i=0;
+    int i=0;
     while (token) {
       if (strcmp(token, "U") == 0) {
         C_turn_U(corners[i], corners[i+1]);
@@ -171,26 +172,28 @@ int main() {
 void display_cube(uint8_t *corners, uint8_t *edges) {
 
   // Set up cubies.
-  char c[8][3][4] = {"YOG", "GYO", "OGY",
-                     "YGR", "RYG", "GRY",
-                     "YRB", "BYR", "RBY",
-                     "YBO", "OYB", "BOY",
-                     "WGO", "OWG", "GOW",
-                     "WRG", "GWR", "RGW",
-                     "WBR", "RWB", "BRW",
-                     "WOB", "BWO", "OBW"};
-  char e[12][2][3] = {"YO", "OY",
-                      "YG", "GY",
-                      "YR", "RY",
-                      "YB", "BY",
-                      "OG", "GO",
-                      "GR", "RG",
-                      "RB", "BR",
-                      "BO", "OB",
-                      "WO", "OW",
-                      "WG", "GW",
-                      "WR", "RW",
-                      "WB", "BW"};
+  char c[8][3][4] = { { "YOG", "GYO", "OGY" },
+                      { "YGR", "RYG", "GRY" },
+                      { "YRB", "BYR", "RBY" },
+                      { "YBO", "OYB", "BOY" },
+                      { "WGO", "OWG", "GOW" },
+                      { "WRG", "GWR", "RGW" },
+                      { "WBR", "RWB", "BRW" },
+                      { "WOB", "BWO", "OBW" }
+  };
+  char e[12][2][3] = { { "YO", "OY" },
+                       { "YG", "GY" },
+                       { "YR", "RY" },
+                       { "YB", "BY" },
+                       { "OG", "GO" },
+                       { "GR", "RG" },
+                       { "RB", "BR" },
+                       { "BO", "OB" },
+                       { "WO", "OW" },
+                       { "WG", "GW" },
+                       { "WR", "RW" },
+                       { "WB", "BW" }
+  };
 
   // Assign faces.
   char face[48];

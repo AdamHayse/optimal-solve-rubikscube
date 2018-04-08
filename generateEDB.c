@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "moves.h"
@@ -63,14 +64,13 @@ static unsigned head;
 static unsigned queuesize;
 static unsigned depth;
 
-void breadth_first_search(void);
+static void breadth_first_search(void);
 
-int main() {
+int main(void) {
 
   // Set first entry to 0 and all other states to 0xFF.
   database[0] = 0x0F;
-  int i;
-  for (i=1; i<E_DB_SIZE; i++)
+  for (int i=1; i<E_DB_SIZE; i++)
     database[i] = 0xFF;
 
   #if HALF == 2
@@ -79,7 +79,7 @@ int main() {
   #endif
 
   // Add first combination to the queue.
-  for (i=0; i<NUM_EDGES; i++)
+  for (uint8_t i=0; i<NUM_EDGES; i++)
     queue[0][i] = NUM_EFACES*i;
 
   // Add 0xFF to signal increase in depth.
@@ -134,7 +134,7 @@ int main() {
   printf("\rDatabase generation 100%%\nDone.\n");
 }
 
-void breadth_first_search() {
+void breadth_first_search(void) {
 
   // Add NEW combinations to the end of the queue
   int i;

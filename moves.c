@@ -4,7 +4,6 @@
  * called moves so the search algorithm can easily iterate through them.
  */
 
-#include <stdint.h>
 #include "moves.h"
 
 void C_turn_U(uint8_t *comb, uint8_t *next) {
@@ -475,7 +474,7 @@ void E_turn_Dprime(uint8_t *comb, uint8_t *next) {
   next[11] = comb[10];
 }
 
-void initialize_turns() {
+void initialize_turns(void) {
   moves[0] = C_turn_U;
   moves[1] = C_turn_U2;
   moves[2] = C_turn_Uprime;
@@ -513,3 +512,5 @@ void initialize_turns() {
   moves[34] = E_turn_D2;
   moves[35] = E_turn_Dprime;
 }
+
+void (*moves[36])(uint8_t*, uint8_t*);

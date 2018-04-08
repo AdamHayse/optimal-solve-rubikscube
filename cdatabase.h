@@ -1,6 +1,10 @@
-#include "database.h"
 #ifndef CDATABASE
 #define CDATABASE
+
+#include "database.h"
+
+#include <stdint.h>
+
 #define NUM_CORNERS  8U
 #define NUM_CFACES   3U
 #define C_DB_SIZE 44089920

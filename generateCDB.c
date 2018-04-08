@@ -47,18 +47,17 @@ static unsigned head;
 static unsigned queuesize;
 static unsigned depth;
 
-void breadth_first_search(void);
+static void breadth_first_search(void);
 
-int main() {
+int main(void) {
 
 // Set solved state entry to 0 and all other states to 0xFF.
-  int i;
-  for (i=0; i<C_DB_SIZE; i++)
+  for (int i=0; i<C_DB_SIZE; i++)
     database[i] = 0xFF;
   database[44088826] = 0xF0;
 
   // Add first combination to the queue.
-  for (i=0; i<NUM_CORNERS; i++)
+  for (uint8_t i=0; i<NUM_CORNERS; i++)
     queue[0][i] = NUM_CFACES*i;
 
   // Add 0xFF to signal increase in depth.
@@ -113,7 +112,7 @@ int main() {
   printf("\rDatabase generation 100%%\nDone.\n");
 }
 
-void breadth_first_search() {
+static void breadth_first_search(void) {
 
   // Add NEW combinations to the end of the queue
   int i;

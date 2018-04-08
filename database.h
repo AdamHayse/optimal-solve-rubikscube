@@ -1,5 +1,5 @@
-#ifndef DATABASE
-#define DATABASE
+#ifndef DATABASE_H
+#define DATABASE_H
 
 // Update percent completion of database fill.
 void update_percent(void);
