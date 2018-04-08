@@ -19,4 +19,6 @@ uint8_t E2_path_length(uint8_t *comb, uint8_t *data);
 unsigned E1_get_index(uint8_t *comb);
 unsigned E2_get_index(uint8_t *comb);
 
+void load_edbs(uint8_t *edb1, uint8_t *edb2);
+
 #endif

@@ -40,3 +40,20 @@ unsigned C_get_index(uint8_t *comb) {
 
   return add;
 }
+
+void load_cdb(uint8_t *cdb) {
+  int fd;
+  if ((fd = open("pattern_databases/corners.patdb", O_RDONLY)) == -1) {
+    perror("Could not open corners.patdb");
+    exit(1);
+  }
+  if (read(fd, cdb, C_DB_SIZE) == -1) {
+    perror("Problem reading corners.patdb");
+    exit(1);
+  }
+  if (close(fd) == -1) {
+    perror("Problem closing corners.patdb");
+    exit(1);
+  }
+}
+

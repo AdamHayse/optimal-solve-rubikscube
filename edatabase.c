@@ -72,3 +72,32 @@ unsigned E2_get_index(uint8_t *comb) {
 
   return add;
 }
+
+void load_edbs(uint8_t *edb1, uint8_t *edb2) {
+  int fd;
+  if ((fd = open("pattern_databases/edges1.patdb", O_RDONLY)) == -1) {
+    perror("Could not open edges1.patdb");
+    exit(1);
+  }
+  if (read(fd, edb1, E_DB_SIZE) == -1) {
+    perror("Problem reading edges1.patdb");
+    exit(1);
+  }
+  if (close(fd) == -1) {
+    perror("Problem closing edges1.patdb");
+    exit(1);
+  }
+
+  if ((fd = open("pattern_databases/edges2.patdb", O_RDONLY)) == -1) {
+    perror("Could not open edges2.patdb");
+    exit(1);
+  }
+  if (read(fd, edb2, E_DB_SIZE) == -1) {
+    perror("Problem reading edges2.patdb");
+    exit(1);
+  }
+  if (close(fd) == -1) {
+    perror("Problem closing edges2.patdb");
+    exit(1);
+  }
+}
