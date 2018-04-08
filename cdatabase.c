@@ -4,9 +4,10 @@
  * extracts heuristic values from the corners pattern database.
  */
 
-#include <stdint.h>
-#include "mymath.h"
 #include "cdatabase.h"
+
+#include "mymath.h"
+
 
 // Retrieve stored path length from database.
 uint8_t C_path_length(uint8_t *comb, uint8_t *database) {
@@ -27,7 +28,7 @@ unsigned C_get_index(uint8_t *comb) {
   for (i=7; i>0; i--) {
     int p4 = comb[i]/3 * 4;
     add += fact[i] * (state >> p4 & 15);
-    state -= 0x1111111111111110 << p4;
+    state -= 0x1111111111111110ULL << p4;
   }
 
   // Scale for permutation offset.

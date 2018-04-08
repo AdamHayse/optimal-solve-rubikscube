@@ -1,4 +1,9 @@
+#ifndef EDATABASE_H
+#define EDATABASE_H
+
 #include "database.h"
+
+#include <stdint.h>
 
 #define NUM_EDGES  12U
 #define NUM_EFACES 2U
@@ -14,4 +19,4 @@ uint8_t E2_path_length(uint8_t *comb, uint8_t *data);
 unsigned E1_get_index(uint8_t *comb);
 unsigned E2_get_index(uint8_t *comb);
 
-
+#endif

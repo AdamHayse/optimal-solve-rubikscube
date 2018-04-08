@@ -4,9 +4,9 @@
  * extracts heuristic values from the edge pattern databases.
  */
 
-#include <stdint.h>
-#include "mymath.h"
 #include "edatabase.h"
+
+#include "mymath.h"
 
 // Retrieve stored path length from first database.
 uint8_t E1_path_length(uint8_t *comb, uint8_t *database) {
@@ -37,7 +37,7 @@ unsigned E1_get_index(uint8_t *comb) {
   for (i=0; i<5; i++) {
     int p4 = comb[i]/2 * 4;
     add = (11-i) * (add + (state >> p4 & 15));
-    state -= 0x1111111111111110 << p4;
+    state -= 0x1111111111111110ULL << p4;
   }
   add += state >> comb[5]/2 * 4 & 15; 
 
@@ -59,7 +59,7 @@ unsigned E2_get_index(uint8_t *comb) {
   for (i=11; i>6; i--) {
     int p4 = comb[i]/2 * 4;
     add = i * (add + (state >> p4 & 15));
-    state -= 0x1111111111111110 << p4;
+    state -= 0x1111111111111110ULL << p4;
   }
   add += state >> comb[6]/2 * 4 & 15; 
 

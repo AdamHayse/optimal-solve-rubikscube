@@ -1,5 +1,7 @@
-#ifndef MOVES
-#define MOVES
+#ifndef MOVES_H
+#define MOVES_H
+
+#include <stdint.h>
 
 // Functions for all moves that can be performed.
 void C_turn_U(uint8_t *comb, uint8_t *next);
@@ -41,6 +43,6 @@ void E_turn_Dprime(uint8_t *comb, uint8_t *next);
 
 // Assign pointers to all functions to static array moves.
 void initialize_turns(void);
-void (*moves[36])(uint8_t*, uint8_t*);
+extern void (*moves[36])(uint8_t*, uint8_t*);
 
 #endif

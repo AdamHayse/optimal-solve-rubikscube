@@ -3,7 +3,7 @@
  * functions within the basic operation of the search algorithm.
  */
 
-#include "math.h"
+#include "mymath.h"
 
 // Power with O(1) time efficiency.
 const unsigned two_to_the[7] = {1, 2, 4, 8, 16, 32, 64};
