@@ -51,11 +51,11 @@ void breadth_first_search(void);
 
 int main() {
 
-  // Set first entry to 0 and all other states to 0xFF.
-  database[0] = 0x0F;
+// Set solved state entry to 0 and all other states to 0xFF.
   int i;
-  for (i=1; i<C_DB_SIZE; i++)
+  for (i=0; i<C_DB_SIZE; i++)
     database[i] = 0xFF;
+  database[44088826] = 0xF0;
 
   // Add first combination to the queue.
   for (i=0; i<NUM_CORNERS; i++)
@@ -69,7 +69,7 @@ int main() {
   depth = 1;
   head = 0;
 
-  // Put all turn functions in a static array of functions called moves.
+  // Put all turn functions in an array of functions called moves.
   initialize_turns();
 
   // Show progress tracker.
@@ -97,11 +97,20 @@ int main() {
   }
 
   // Write database to a file.
-  int fd = creat("pattern_databases/corners.patdb", 0644);
-  write(fd, database, C_DB_SIZE);
-  close(fd);
+  int fd;
+  if ((fd=creat("pattern_databases/corners.patdb", 0644)) == -1) {
+    perror("\nUnable to create file\n");
+    exit(1);
+  }
+  if (write(fd, database, C_DB_SIZE) == -1) {
+    perror("\nThere was a problem writing to the file.\n");
+    exit(1);
+  }
+  if (close(fd) == -1) {
+    perror("\nThere was a problem closing the file.\n");
+    exit(1);
+  }
   printf("\rDatabase generation 100%%\nDone.\n");
-
 }
 
 void breadth_first_search() {

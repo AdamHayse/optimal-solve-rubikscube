@@ -94,7 +94,7 @@ int main() {
   initialize_turns();
 
   // Show progress tracker.
-  display_percent();
+  update_percent();
 
   // Continue BFS until only element in queue is 0xFF.
   while (1) {
@@ -118,9 +118,19 @@ int main() {
   }
 
   // Write database to a file.
-  int fd = creat("pattern_databases/edges"FILENAME".patdb", 0644);
-  write(fd, database, E_DB_SIZE);
-  close(fd);
+  int fd;
+  if ((fd=creat("pattern_databases/edges"FILENAME".patdb", 0644)) == -1) {
+    perror("\nUnable to create file\n");
+    exit(1);
+  }
+  if (write(fd, database, E_DB_SIZE) == -1) {
+    perror("\nThere was a problem writing to the file.\n");
+    exit(1);
+  }
+  if (close(fd) == -1) {
+    perror("\nThere was a problem closing the file.\n");
+    exit(1);
+  }
   printf("\rDatabase generation 100%%\nDone.\n");
 }
 

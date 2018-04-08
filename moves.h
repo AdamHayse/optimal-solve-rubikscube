@@ -41,7 +41,6 @@ void E_turn_Dprime(uint8_t *comb, uint8_t *next);
 
 // Assign pointers to all functions to static array moves.
 void initialize_turns(void);
-
-static void (*moves[36])(uint8_t*, uint8_t*);
+void (*moves[36])(uint8_t*, uint8_t*);
 
 #endif

@@ -5,7 +5,7 @@
  */
 
 #include <stdint.h>
-#include <mymath.h>
+#include "mymath.h"
 #include "edatabase.h"
 
 // Retrieve stored path length from first database.

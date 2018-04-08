@@ -24,9 +24,9 @@ unsigned C_get_index(uint8_t *comb) {
 
   // Calculate which permutation number.
   unsigned long long state = 0xFEDCBA9876543210;
-  for (i=0; i<7; i++) {
+  for (i=7; i>0; i--) {
     int p4 = comb[i]/3 * 4;
-    add += fact[7-i] * (state >> p4 & 15);
+    add += fact[i] * (state >> p4 & 15);
     state -= 0x1111111111111110 << p4;
   }
 
