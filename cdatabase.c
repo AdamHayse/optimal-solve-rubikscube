@@ -4,8 +4,11 @@
  * extracts heuristic values from the corners pattern database.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "cdatabase.h"
-
 #include "mymath.h"
 
 

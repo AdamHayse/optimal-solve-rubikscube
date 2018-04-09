@@ -4,8 +4,11 @@
  * extracts heuristic values from the edge pattern databases.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "edatabase.h"
-
 #include "mymath.h"
 
 // Retrieve stored path length from first database.

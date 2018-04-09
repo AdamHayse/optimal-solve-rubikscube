@@ -27,27 +27,8 @@ static uint8_t e2database[E_DB_SIZE];
 int main(void) {
 
   // Load databases.
-  int fd;
-  if ((fd = open("pattern_databases/corners.patdb", O_RDONLY)) == -1) {
-    perror("Could not open corners.patdb");
-    exit(1);
-  }
-  read(fd, cdatabase, C_DB_SIZE);
-  close(fd);
-  
-  if ((fd = open("pattern_databases/edges1.patdb", O_RDONLY)) == -1) {
-    perror("Could not open edges1.patdb");
-    exit(1);
-  }
-  read(fd, e1database, E_DB_SIZE);
-  close(fd);
-
-  if ((fd = open("pattern_databases/edges2.patdb", O_RDONLY)) == -1) {
-    perror("Could not open edges2.patdb");
-    exit(1);
-  }
-  read(fd, e2database, E_DB_SIZE);
-  close(fd);
+  load_cdb(cdatabase);
+  load_edbs(e1database, e2database);
 
   // Get scramble algorithm and execute it on solved combination.
   char scramble[256];
