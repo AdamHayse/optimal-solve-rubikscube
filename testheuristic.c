@@ -146,6 +146,7 @@ int main(void) {
     // Print resulting combination and database results.
     display_cube(corners[i], edges[i]);
     printf("%u\n", valid_comb(corners[i], edges[i]));
+    display_scramble(corners[i], edges[i]);
   }
 }
 
@@ -297,4 +298,14 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
     
   // Passed all 3 tests.  Solvable.
   return 1;
+}
+
+void display_scramble(uint8_t *corners, uint8_t *edges) {
+  for (int i=0; i<8; i++)
+    printf("%u, ", corners[i]);
+  putchar('\n');
+  for (int i=0; i<12; i++)
+    printf("%u, ", edges[i]);
+  putchar('\n');
+
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
+#include <string.h>
 
 #include "searchmoves.h"
 #include "cdatabase.h"
@@ -25,22 +26,23 @@ int main(void) {
   load_edbs(e1database, e2database);
   initialize_turns();
 
-  // Set solved and scrambled states.
-  initialize_nodes();
+  // Get solved and scrambled states.
+  get_scramble();
 
   // Get initial estimate to solve.
   unsigned threshold = maxheur(&scrambled);
 
   while (1) {
     int temp = search(&scrambled, 0, threshold);
+
     if (temp == FOUND) {
+      printf("Success %u\n", threshold);
       return FOUND;
-      printf("Success\n");
     }
     if (temp == 21) // No solution is greater than 20 moves.
     {
-      return 0;
       printf("problem\n");
+      break;
     }
     threshold = temp;
   }
@@ -49,10 +51,13 @@ int main(void) {
 // Recursive search function
 unsigned search(NODE *node, unsigned g, unsigned threshold) {
   unsigned f = g + maxheur(node);
+
   if (f > threshold)
     return f;
+
   if (node->heurC == 0 && node->heurE1 == 0 && node->heurE2 == 0)
     return FOUND;
+
   unsigned min = UINT_MAX;
 
   NODE *nodelist = next_nodes(node);
@@ -67,6 +72,7 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
   return min;
 }
 
+// Get dynamically allocated list of next nodes.
 NODE* next_nodes(NODE *node) {
   // Returns a list of all possible next nodes from node.
   NODE *next = (NODE*)malloc(15*sizeof(NODE));
@@ -83,36 +89,6 @@ NODE* next_nodes(NODE *node) {
   return next;
 }
 
-// Set up the scrambled state node and the solved state node.
-void initialize_nodes(void) {
-  for (int i=0; i<8; i++)
-    solved.corners[i] = 3*i;
-
-  for (int i=0; i<12; i++)
-    solved.edges[i] = 2*i;
-
- /* solved.encodeC = 88177653;
-  solved.encodeE1 = 0;
-  solved.encodeE2 = 42577856; */
-  solved.heurC = 0;
-  solved.heurE1 = 0;
-  solved.heurE2 = 0;
-
-  // Find test scramble later.
-  for (int i=0; i<8; i++)
-    scrambled.corners[i] = 3*i;
-
-  for (int i=0; i<12; i++)
-    scrambled.edges[i] = 2*i;
- /* scrambled.encodeC = 88177653;
-  scrambled.encodeE1 = 0;
-  scrambled.encodeE2 = 42577856; */
-  scrambled.heurC = 0;
-  scrambled.heurE1 = 0;
-  scrambled.heurE2 = 0;
-  scrambled.lastmove = UINT_MAX;
-}
-
 // Get the largest admissible heuristic.
 unsigned maxheur(NODE *node) {
   if (node->heurC > node->heurE1 && node->heurC > node->heurE2)
@@ -121,4 +97,71 @@ unsigned maxheur(NODE *node) {
     return node->heurE1;
   else
     return node->heurE2;
+}
+
+// Get scramble from the user.
+void get_scramble(void) {
+  // Set up solved state
+  for (int i=0; i<8; i++)
+    solved.corners[i] = 3*i;
+  for (int i=0; i<12; i++)
+    solved.edges[i] = 2*i;
+  solved.heurC = 0;
+  solved.heurE1 = 0;
+  solved.heurE2 = 0;
+
+  // Get scramble algorithm from user.
+  char scramble[256];
+  NODE states[32];
+  states[0] = solved;
+  fgets(scramble, 256, stdin);
+
+  // Tokenize user input and perform moves.
+  char* token = strtok(scramble, " \n()[]\t{}");
+  int i=0;
+  while (token) {
+    if (strcmp(token, "U") == 0)
+      turn_U(&states[i], &states[i+1]);
+    else if (strcmp(token, "U2") == 0)
+      turn_U2(&states[i], &states[i+1]);
+    else if (strcmp(token, "U'") == 0)
+      turn_Uprime(&states[i], &states[i+1]);
+    else if (strcmp(token, "F") == 0)
+      turn_F(&states[i], &states[i+1]);
+    else if (strcmp(token, "F2") == 0)
+      turn_F2(&states[i], &states[i+1]);
+    else if (strcmp(token, "F'") == 0)
+      turn_Fprime(&states[i], &states[i+1]);
+    else if (strcmp(token, "L") == 0)
+      turn_L(&states[i], &states[i+1]);
+    else if (strcmp(token, "L2") == 0)
+      turn_L2(&states[i], &states[i+1]);
+    else if (strcmp(token, "L'") == 0)
+      turn_Lprime(&states[i], &states[i+1]);
+    else if (strcmp(token, "B") == 0)
+      turn_B(&states[i], &states[i+1]);
+    else if (strcmp(token, "B2") == 0)
+      turn_B2(&states[i], &states[i+1]);
+    else if (strcmp(token, "B'") == 0)
+      turn_Bprime(&states[i], &states[i+1]);
+    else if (strcmp(token, "R") == 0)
+      turn_R(&states[i], &states[i+1]);
+    else if (strcmp(token, "R2") == 0)
+      turn_R2(&states[i], &states[i+1]);
+    else if (strcmp(token, "R'") == 0)
+      turn_Rprime(&states[i], &states[i+1]);
+    else if (strcmp(token, "D") == 0)
+      turn_D(&states[i], &states[i+1]);
+    else if (strcmp(token, "D2") == 0)
+      turn_D2(&states[i], &states[i+1]);
+    else if (strcmp(token, "D'") == 0)
+      turn_Dprime(&states[i], &states[i+1]);
+    else {
+      printf("Invalid scramble");
+      exit(0);
+    }
+    token = strtok(NULL, " \n()[]\t{}");
+    i++;
+  }
+  scrambled = states[i];
 }

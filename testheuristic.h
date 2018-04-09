@@ -10,4 +10,6 @@ void display_cube(uint8_t *corners, uint8_t *edges);
    a member of the subgraph that contains the solution state. */
 unsigned valid_comb(uint8_t *corners, uint8_t *edges);
 
+void display_scramble(uint8_t *corners, uint8_t *edges);
+
 #endif

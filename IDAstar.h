@@ -20,13 +20,14 @@ typedef struct node {
 // Recursive search function
 unsigned search(NODE *node, unsigned g, unsigned threshold);
 
+// Get dynamically allocated list of next nodes.
 NODE* next_nodes(NODE *node);
-
-// Set up the scrambled state node and the solved state node.
-void initialize_nodes(void);
 
 // Get the largest admissible heuristic.
 unsigned maxheur(NODE *node);
+
+// Get scramble from the user.
+void get_scramble(void);
 
 extern uint8_t cdatabase[C_DB_SIZE];
 extern uint8_t e1database[E_DB_SIZE];
