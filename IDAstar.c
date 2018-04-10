@@ -84,11 +84,15 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
   }
 
   // Perform search on each child node.
-  for (i=0; i<15; i++) {
+  for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
+   /* printf("Turning ");
+    printmove(nodelist[i].moves[g]);
+    printf("\n"); */
+
     unsigned length = search(nodelist+i, g+1, threshold);
     if (length == FOUND) {
         solved.moves[g] = nodelist[i].moves[g];  // Populate static solved node with the moves.
-      return FOUND;
+        return FOUND;
     }
     if (length < min)
       min = length;
