@@ -28,20 +28,20 @@ int main(void) {
   get_scramble();
 
   // Get initial estimate to solve.
-  unsigned threshold = maxheur(&scrambled);
-  int found;
+  unsigned threshold = scrambled.h;
+  int length;
   // Search for a solution.
   while (1) {
-    found = search(&scrambled, 0, threshold);
+    length = search(&scrambled, 0, threshold);
 
-    if (found == 21) // No solution is greater than 20 moves.
+    if (length == 21) // No solution is greater than 20 moves.
     {
       printf("There was a problem.\n");
       exit(0);
     }
-    if (found == 0)
+    if (length == FOUND)
       break;
-    threshold = found;
+    threshold = length;
   }
 
   // Print solution.
@@ -53,17 +53,19 @@ int main(void) {
 
 // Recursive search function
 unsigned search(NODE *node, unsigned g, unsigned threshold) {
-  unsigned f = g + maxheur(node);
+  unsigned f = g + node->h;
 
+  // Depth limit imposed by the heuristic and current depth.
   if (f > threshold)
     return f;
 
-  if (node->heurC == 0 && node->heurE1 == 0 && node->heurE2 == 0)
-    return 0;
+  // Only node where h equals 0 is the solved state.
+  if (node->h == 0)
+    return FOUND;
 
   unsigned min = UINT_MAX;
 
-  // Create child nodes list.
+  // Assign all previous moves up to this point to new child nodes.
   NODE nodelist[g ? 15 : 18];
   int i, j;
   for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++)
@@ -81,43 +83,42 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
     }
   }
 
-  // Perform search on 
-  for (int i=0; i<15; i++) {
-    unsigned found = search(nodelist+i, g+1, threshold);
-    if (found == 0) {
-        solved.moves[g] = nodelist[i].moves[g];
-      return 0;
+  // Perform search on each child node.
+  for (i=0; i<15; i++) {
+    unsigned length = search(nodelist+i, g+1, threshold);
+    if (length == FOUND) {
+        solved.moves[g] = nodelist[i].moves[g];  // Populate static solved node with the moves.
+      return FOUND;
     }
-    if (found < min)
-      min = found;
+    if (length < min)
+      min = length;
   }
   return min;
 }
 
 // Get the largest admissible heuristic.
-unsigned maxheur(NODE *node) {
-  if (node->heurC > node->heurE1 && node->heurC > node->heurE2)
-    return node->heurC;
-  else if (node->heurE1 > node->heurC && node->heurE1 > node->heurE2)
-    return node->heurE1;
+uint8_t maxh(uint8_t c, uint8_t e1, uint8_t e2) {
+  if (c > e1 && c > e2)
+    return c;
+  if (e1 > c && e1 > e2)
+    return e1;
   else
-    return node->heurE2;
+    return e2;
 }
 
 // Get scramble from the user.
 void get_scramble(void) {
-  // Set up solved state
+
+  // Set up solved state node.
   for (int i=0; i<8; i++)
     solved.corners[i] = 3*i;
   for (int i=0; i<12; i++)
     solved.edges[i] = 2*i;
-  solved.heurC = 0;
-  solved.heurE1 = 0;
-  solved.heurE2 = 0;
+  solved.h = 0;
 
   // Get scramble algorithm from user.
   char scramble[256];
-  NODE states[32];
+  NODE states[32];  // Can enter 32 moves.
   states[0] = solved;
   fgets(scramble, 256, stdin);
 

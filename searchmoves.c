@@ -32,9 +32,9 @@ void turn_U(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_U2(NODE *prev, NODE *next) {
@@ -60,9 +60,9 @@ void turn_U2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Uprime(NODE *prev, NODE *next) {
@@ -88,9 +88,9 @@ void turn_Uprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_F(NODE *prev, NODE *next) {
@@ -116,9 +116,9 @@ void turn_F(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_F2(NODE *prev, NODE *next) {
@@ -144,9 +144,9 @@ void turn_F2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Fprime(NODE *prev, NODE *next) {
@@ -172,9 +172,9 @@ void turn_Fprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_L(NODE *prev, NODE *next) {
@@ -200,9 +200,9 @@ void turn_L(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_L2(NODE *prev, NODE *next) {
@@ -228,9 +228,9 @@ void turn_L2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Lprime(NODE *prev, NODE *next) {
@@ -256,9 +256,9 @@ void turn_Lprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_B(NODE *prev, NODE *next) {
@@ -284,9 +284,9 @@ void turn_B(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[5];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_B2(NODE *prev, NODE *next) {
@@ -312,9 +312,9 @@ void turn_B2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[2];
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Bprime(NODE *prev, NODE *next) {
@@ -340,9 +340,9 @@ void turn_Bprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[6]%2 ? prev->edges[6]-1 : prev->edges[6]+1;
   next->edges[11] = prev->edges[11];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_R(NODE *prev, NODE *next) {
@@ -368,9 +368,9 @@ void turn_R(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[6];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_R2(NODE *prev, NODE *next) {
@@ -396,9 +396,9 @@ void turn_R2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[3];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Rprime(NODE *prev, NODE *next) {
@@ -424,9 +424,9 @@ void turn_Rprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[10];
   next->edges[11] = prev->edges[7]%2 ? prev->edges[7]-1 : prev->edges[7]+1;
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_D(NODE *prev, NODE *next) {
@@ -452,9 +452,9 @@ void turn_D(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[11];
   next->edges[11] = prev->edges[8];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_D2(NODE *prev, NODE *next) {
@@ -480,9 +480,9 @@ void turn_D2(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[8];
   next->edges[11] = prev->edges[9];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void turn_Dprime(NODE *prev, NODE *next) {
@@ -508,9 +508,9 @@ void turn_Dprime(NODE *prev, NODE *next) {
   next->edges[10] = prev->edges[9];
   next->edges[11] = prev->edges[10];
 
-  next->heurC = C_path_length(next->corners, cdatabase);
-  next->heurE1 = E1_path_length(next->edges, e1database);
-  next->heurE2 = E2_path_length(next->edges, e2database);
+  next->h = maxh(C_path_length(next->corners, cdatabase),
+                 E1_path_length(next->edges, e1database),
+                 E2_path_length(next->edges, e2database));
 }
 
 void initialize_turns(void) {

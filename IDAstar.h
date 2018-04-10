@@ -5,12 +5,12 @@
 #include "cdatabase.h"
 #include "edatabase.h"
 
+#define FOUND 0
+
 typedef struct node {
   uint8_t corners[8];
   uint8_t edges[12];
-  unsigned heurC;
-  unsigned heurE1;
-  unsigned heurE2;
+  unsigned h;
   uint8_t moves[20];  // Moves performed to reach this node
 } NODE;
 
@@ -21,11 +21,12 @@ unsigned search(NODE *node, unsigned g, unsigned threshold);
 NODE* next_nodes(NODE *node);
 
 // Get the largest admissible heuristic.
-unsigned maxheur(NODE *node);
+uint8_t maxh(uint8_t c, uint8_t e1, uint8_t e2);
 
 // Get scramble from the user.
 void get_scramble(void);
 
+// Print a move.
 void printmove(uint8_t move);
 
 extern uint8_t cdatabase[C_DB_SIZE];

@@ -2,7 +2,7 @@ CC ?=gcc
 CPPFLAGS ?=
 CFLAGS ?=-std=c99 -Wall -Wextra -pedantic -O2
 
-BINS=generateEDB1 generateEDB2 generateCDB testheuristic
+BINS=generateEDB1 generateEDB2 generateCDB testheuristic IDAstar
 
 all: $(BINS)
 
