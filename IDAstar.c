@@ -23,32 +23,33 @@ int main(void) {
   load_cdb(cdatabase);
   load_edbs(e1database, e2database);
   initialize_turns();
-
-  // Get solved and scrambled states.
-  get_scramble();
-
-  // Get initial estimate to solve.
-  unsigned threshold = scrambled.h;
-  int length;
-  // Search for a solution.
   while (1) {
-    length = search(&scrambled, 0, threshold);
+    // Get solved and scrambled states.
+    get_scramble();
 
-    if (length == 21) // No solution is greater than 20 moves.
-    {
-      printf("There was a problem.\n");
-      exit(0);
+    // Get initial estimate to solve.
+    unsigned threshold = scrambled.h;
+    int length;
+    // Search for a solution.
+    while (1) {
+      length = search(&scrambled, 0, threshold);
+
+      if (length == 21) // No solution is greater than 20 moves.
+      {
+        printf("There was a problem.\n");
+        exit(0);
+      }
+      if (length == FOUND)
+        break;
+      threshold = length;
     }
-    if (length == FOUND)
-      break;
-    threshold = length;
+
+    // Print solution.
+    for (int i=0; i<threshold; i++)
+      printmove(solved.moves[i]);
+
+    putchar('\n');
   }
-
-  // Print solution.
-  for (int i=0; i<threshold; i++)
-    printmove(solved.moves[i]);
-
-  putchar('\n');
 }
 
 // Recursive search function
@@ -85,9 +86,9 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
 
   // Perform search on each child node.
   for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
-   /* printf("Turning ");
+    printf("Turning ");
     printmove(nodelist[i].moves[g]);
-    printf("\n"); */
+    printf("\n");
 
     unsigned length = search(nodelist+i, g+1, threshold);
     if (length == FOUND) {
