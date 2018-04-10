@@ -9,8 +9,6 @@
 #include "edatabase.h"
 #include "IDAstar.h"
 
-#define FOUND 50
-
 uint8_t cdatabase[C_DB_SIZE];
 uint8_t e1database[E_DB_SIZE];
 uint8_t e2database[E_DB_SIZE];
@@ -31,21 +29,26 @@ int main(void) {
 
   // Get initial estimate to solve.
   unsigned threshold = maxheur(&scrambled);
-
+  int found;
+  // Search for a solution.
   while (1) {
-    int temp = search(&scrambled, 0, threshold);
+    found = search(&scrambled, 0, threshold);
 
-    if (temp == FOUND) {
-      printf("Success %u\n", threshold);
-      return FOUND;
-    }
-    if (temp == 21) // No solution is greater than 20 moves.
+    if (found == 21) // No solution is greater than 20 moves.
     {
-      printf("problem\n");
-      break;
+      printf("There was a problem.\n");
+      exit(0);
     }
-    threshold = temp;
+    if (found == 0)
+      break;
+    threshold = found;
   }
+
+  // Print solution.
+  for (int i=0; i<threshold; i++)
+    printmove(solved.moves[i]);
+
+  putchar('\n');
 }
 
 // Recursive search function
@@ -56,37 +59,39 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
     return f;
 
   if (node->heurC == 0 && node->heurE1 == 0 && node->heurE2 == 0)
-    return FOUND;
+    return 0;
 
   unsigned min = UINT_MAX;
 
-  NODE *nodelist = next_nodes(node);
-  for (int i=0; i<15; i++) {
-    unsigned temp = search(nodelist+i, g+1, threshold);
-    if (temp == FOUND)
-      return FOUND;
-    if (temp < min)
-      min = temp;
-  }
-  free(nodelist);
-  return min;
-}
+  // Create child nodes list.
+  NODE nodelist[g ? 15 : 18];
+  int i, j;
+  for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++)
+    for (j=0; j<g; j++)
+      nodelist[i].moves[j] = node->moves[j];
 
-// Get dynamically allocated list of next nodes.
-NODE* next_nodes(NODE *node) {
-  // Returns a list of all possible next nodes from node.
-  NODE *next = (NODE*)malloc(15*sizeof(NODE));
-  int i=0;
-  unsigned lastmove = node->lastmove;
-  for (int j=0; j<18; j++) {
+  // Assign moves to child nodes.
+  i=0;
+  for (j=0; j<18; j++) {
     // Don't turn the same face twice.
-    if (j/3 != lastmove/3) {
-      (*moves[j])(node, next+i);
-      next[i].lastmove = j;
+    if (g == 0 || j/3 != node->moves[g-1]/3) {
+      (*moves[j])(node, nodelist+i);
+      nodelist[i].moves[g] = j;
       i++;
     }
   }
-  return next;
+
+  // Perform search on 
+  for (int i=0; i<15; i++) {
+    unsigned found = search(nodelist+i, g+1, threshold);
+    if (found == 0) {
+        solved.moves[g] = nodelist[i].moves[g];
+      return 0;
+    }
+    if (found < min)
+      min = found;
+  }
+  return min;
 }
 
 // Get the largest admissible heuristic.
@@ -164,4 +169,27 @@ void get_scramble(void) {
     i++;
   }
   scrambled = states[i];
+}
+
+void printmove(uint8_t move) {
+  switch(move) {
+    case 0:  printf("U "); break;
+    case 1:  printf("U2 "); break;
+    case 2:  printf("U' "); break;
+    case 3:  printf("F "); break;
+    case 4:  printf("F2 "); break;
+    case 5:  printf("F' "); break;
+    case 6:  printf("L "); break;
+    case 7:  printf("L2 "); break;
+    case 8:  printf("L' "); break;
+    case 9:  printf("B "); break;
+    case 10:  printf("B2 "); break;
+    case 11:  printf("B' "); break;
+    case 12:  printf("R "); break;
+    case 13:  printf("R2 "); break;
+    case 14:  printf("R' "); break;
+    case 15:  printf("D "); break;
+    case 16:  printf("D2 "); break;
+    case 17:  printf("D' "); break;
+  }
 }
