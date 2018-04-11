@@ -36,6 +36,7 @@ unsigned E1_get_index(uint8_t *comb) {
   unsigned i, add = 0;
 
   // Calculate which permutation number.
+  // Solve pieces in positions 1-6
   unsigned long long state = 0xFEDCBA9876543210;
   for (i=0; i<5; i++) {
     int p4 = comb[i]/2 * 4;

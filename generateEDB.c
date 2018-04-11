@@ -139,30 +139,32 @@ void breadth_first_search(void) {
   // Add NEW combinations to the end of the queue
   int i;
   unsigned index, add, pos;
-  for (i=18; i<35; i++) {
+  for (i=18; i<33; i++) {
 
-    // Put candidate combination at end of queue.
-    (*moves[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)]);
+    // If turn effects edges cubes that we care about.
+    if ((*moves[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)])) {
 
-    // If combination hasn't been seen, keep it in the queue.
-    index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);
-    add = index / 2;
-    pos = index % 2;
-    if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
+      // If combination hasn't been seen, keep it in the queue.
+      index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);
+      printf("%u\n", i);
+      add = index / 2;
+      pos = index % 2;
+      if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
 
-      // Keep combination in the queue.
-      queuesize++;
+        // Keep combination in the queue.
+        queuesize++;
 
-      // Add depth to database.
-      if (pos)
-        database[add] = database[add] & depth + 0xF0;
-      else
-        database[add] = database[add] & (depth << 4) + 0xF;
+        // Add depth to database.
+        if (pos)
+          database[add] = database[add] & (depth | 0xF0);
+        else
+          database[add] = database[add] & ((depth << 4) | 0x0F);
 
-      // Increase fill amount.
-      fill_amount++;
-      if ((double)fill_amount / (E_DB_SIZE * 2) > fill_percent + .01)
-        update_percent();
+        // Increase fill amount.
+        fill_amount++;
+        if ((double)fill_amount / (E_DB_SIZE * 2) > fill_percent + .01)
+          update_percent();
+      }
     }
   }
 

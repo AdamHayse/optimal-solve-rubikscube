@@ -23,10 +23,12 @@ int main(void) {
   load_cdb(cdatabase);
   load_edbs(e1database, e2database);
   initialize_turns();
+
+
   while (1) {
     // Get solved and scrambled states.
     get_scramble();
-
+printf("%u\n", E2_path_length(scrambled.edges, e2database));
     // Get initial estimate to solve.
     unsigned threshold = scrambled.h;
     int length;

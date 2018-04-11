@@ -6,7 +6,7 @@
 
 #include "moves.h"
 
-void C_turn_U(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_U(uint8_t *comb, uint8_t *next) {
   next[0] = comb[3];
   next[1] = comb[0];
   next[2] = comb[1];
@@ -17,7 +17,7 @@ void C_turn_U(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_U2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_U2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[2];
   next[1] = comb[3];
   next[2] = comb[0];
@@ -28,7 +28,7 @@ void C_turn_U2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_Uprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Uprime(uint8_t *comb, uint8_t *next) {
   next[0] = comb[1];
   next[1] = comb[2];
   next[2] = comb[3];
@@ -39,7 +39,7 @@ void C_turn_Uprime(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_F(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_F(uint8_t *comb, uint8_t *next) {
   next[0] = comb[4]%3 ? comb[4]-1 : comb[4]+2;
   next[1] = comb[1];
   next[2] = comb[2];
@@ -50,7 +50,7 @@ void C_turn_F(uint8_t *comb, uint8_t *next) {
   next[7] = comb[3]%3 ? comb[3]-1 : comb[3]+2;
 }
 
-void C_turn_F2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_F2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[7];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -61,7 +61,7 @@ void C_turn_F2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[0];
 }
 
-void C_turn_Fprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Fprime(uint8_t *comb, uint8_t *next) {
   next[0] = comb[3]%3 ? comb[3]-1 : comb[3]+2;
   next[1] = comb[1];
   next[2] = comb[2];
@@ -72,7 +72,7 @@ void C_turn_Fprime(uint8_t *comb, uint8_t *next) {
   next[7] = comb[4]%3 ? comb[4]-1 : comb[4]+2;
 }
 
-void C_turn_L(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_L(uint8_t *comb, uint8_t *next) {
   next[0] = (comb[1]+1)%3 ? comb[1]+1 : comb[1]-2;
   next[1] = comb[5]%3 ? comb[5]-1 : comb[5]+2;
   next[2] = comb[2];
@@ -83,7 +83,7 @@ void C_turn_L(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_L2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_L2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[5];
   next[1] = comb[4];
   next[2] = comb[2];
@@ -94,7 +94,7 @@ void C_turn_L2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_Lprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Lprime(uint8_t *comb, uint8_t *next) {
   next[0] = (comb[4]+1)%3 ? comb[4]+1 : comb[4]-2;
   next[1] = comb[0]%3 ? comb[0]-1 : comb[0]+2;
   next[2] = comb[2];
@@ -105,7 +105,7 @@ void C_turn_Lprime(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_B(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_B(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = (comb[2]+1)%3 ? comb[2]+1 : comb[2]-2;
   next[2] = comb[6]%3 ? comb[6]-1 : comb[6]+2;
@@ -116,7 +116,7 @@ void C_turn_B(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_B2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_B2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[6];
   next[2] = comb[5];
@@ -127,7 +127,7 @@ void C_turn_B2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_Bprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Bprime(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = (comb[5]+1)%3 ? comb[5]+1 : comb[5]-2;
   next[2] = comb[1]%3 ? comb[1]-1 : comb[1]+2;
@@ -138,7 +138,7 @@ void C_turn_Bprime(uint8_t *comb, uint8_t *next) {
   next[7] = comb[7];
 }
 
-void C_turn_R(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_R(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = (comb[3]+1)%3 ? comb[3]+1 : comb[3]-2;
@@ -149,7 +149,7 @@ void C_turn_R(uint8_t *comb, uint8_t *next) {
   next[7] = (comb[6]+1)%3 ? comb[6]+1 : comb[6]-2;
 }
 
-void C_turn_R2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_R2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[7];
@@ -160,7 +160,7 @@ void C_turn_R2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[2];
 }
 
-void C_turn_Rprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Rprime(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = (comb[6]+1)%3 ? comb[6]+1 : comb[6]-2;
@@ -171,7 +171,7 @@ void C_turn_Rprime(uint8_t *comb, uint8_t *next) {
   next[7] = (comb[3]+1)%3 ? comb[3]+1 : comb[3]-2;
 }
 
-void C_turn_D(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_D(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -182,7 +182,7 @@ void C_turn_D(uint8_t *comb, uint8_t *next) {
   next[7] = comb[4];
 }
 
-void C_turn_D2(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_D2(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -193,7 +193,7 @@ void C_turn_D2(uint8_t *comb, uint8_t *next) {
   next[7] = comb[5];
 }
 
-void C_turn_Dprime(uint8_t *comb, uint8_t *next) {
+unsigned C_turn_Dprime(uint8_t *comb, uint8_t *next) {
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -204,11 +204,12 @@ void C_turn_Dprime(uint8_t *comb, uint8_t *next) {
   next[7] = comb[6];
 }
 
-void E_turn_U(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[3];
-  next[1] = comb[0];
-  next[2] = comb[1];
-  next[3] = comb[2];
+unsigned E_turn_U(uint8_t *comb, uint8_t *next) {
+  if ((next[0] = comb[3]) > 11 && 
+      (next[1] = comb[0]) > 11 &&
+      (next[2] = comb[1]) > 11 &&
+      (next[3] = comb[2]) > 11)
+    return 0;
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -217,13 +218,15 @@ void E_turn_U(uint8_t *comb, uint8_t *next) {
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_U2(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[2];
-  next[1] = comb[3];
-  next[2] = comb[0];
-  next[3] = comb[1];
+unsigned E_turn_U2(uint8_t *comb, uint8_t *next) {
+  if ((next[0] = comb[2]) > 11 && 
+      (next[1] = comb[3]) > 11 &&
+      (next[2] = comb[0]) > 11 &&
+      (next[3] = comb[1]) > 11)
+    return 0;
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -232,13 +235,15 @@ void E_turn_U2(uint8_t *comb, uint8_t *next) {
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_Uprime(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[1];
-  next[1] = comb[2];
-  next[2] = comb[3];
-  next[3] = comb[0];
+unsigned E_turn_Uprime(uint8_t *comb, uint8_t *next) {
+  if ((next[0] = comb[1]) > 11 && 
+      (next[1] = comb[2]) > 11 &&
+      (next[2] = comb[3]) > 11 &&
+      (next[3] = comb[0]) > 11)
+    return 0;
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -247,219 +252,219 @@ void E_turn_Uprime(uint8_t *comb, uint8_t *next) {
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
+
 }
 
-void E_turn_F(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
+unsigned E_turn_F(uint8_t *comb, uint8_t *next) {
+  if ((next[7] = comb[0]) > 11 &&
+      (next[8] = comb[7]) > 11 &&
+      (next[0] = comb[4]%2 ? comb[4]-1 : comb[4]+1) > 11 &&
+      (next[4] = comb[8]%2 ? comb[8]-1 : comb[8]+1) > 11)
+    return 0;
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[8]%2 ? comb[8]-1 : comb[8]+1;
   next[5] = comb[5];
   next[6] = comb[6];
-  next[7] = comb[0];
-  next[8] = comb[7];
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_F2(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[8];
+unsigned E_turn_F2(uint8_t *comb, uint8_t *next) {
+  if ((next[0] = comb[8]) > 11 &&
+      (next[8] = comb[0]) > 11 &&
+      (next[4] = comb[7]%2 ? comb[7]-1 : comb[7]+1) > 11 &&
+      (next[7] = comb[4]%2 ? comb[4]-1 : comb[4]+1) > 11)
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
   next[5] = comb[5];
   next[6] = comb[6];
-  next[7] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
-  next[8] = comb[0];
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_Fprime(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[7];
+unsigned E_turn_Fprime(uint8_t *comb, uint8_t *next) {
+  if ((next[0] = comb[7]) > 11 &&
+      (next[7] = comb[8]) > 11 &&
+      (next[4] = comb[0]%2 ? comb[0]-1 : comb[0]+1) > 11 &&
+      (next[8] = comb[4]%2 ? comb[4]-1 : comb[4]+1) > 11)
+    return 0;
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[0]%2 ? comb[0]-1 : comb[0]+1;
   next[5] = comb[5];
   next[6] = comb[6];
-  next[7] = comb[8];
-  next[8] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
   next[9] = comb[9];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_L(uint8_t *comb, uint8_t *next) {
+unsigned E_turn_L(uint8_t *comb, uint8_t *next) {
+  if ((next[4] = comb[1]) > 11 &&
+      (next[9] = comb[4]) > 11 &&
+      (next[1] = comb[5]%2 ? comb[5]-1 : comb[5]+1) > 11 &&
+      (next[5] = comb[9]%2 ? comb[9]-1 : comb[9]+1) > 11)
+    return 0;
   next[0] = comb[0];
-  next[1] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[1];
-  next[5] = comb[9]%2 ? comb[9]-1 : comb[9]+1;
-  next[6] = comb[6];
-  next[7] = comb[7];
-  next[8] = comb[8];
-  next[9] = comb[4];
-  next[10] = comb[10];
-  next[11] = comb[11];
-}
-
-void E_turn_L2(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[9];
-  next[2] = comb[2];
-  next[3] = comb[3];
-  next[4] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
-  next[5] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
   next[6] = comb[6];
   next[7] = comb[7];
   next[8] = comb[8];
-  next[9] = comb[1];
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_Lprime(uint8_t *comb, uint8_t *next) {
+unsigned E_turn_L2(uint8_t *comb, uint8_t *next) {
+  if ((next[1] = comb[9]) > 11 &&
+      (next[9] = comb[1]) > 11 &&
+      (next[4] = comb[5]%2 ? comb[5]-1 : comb[5]+1) > 11 &&
+      (next[5] = comb[4]%2 ? comb[4]-1 : comb[4]+1) > 11)
+    return 0;
   next[0] = comb[0];
-  next[1] = comb[4];
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[9];
-  next[5] = comb[1]%2 ? comb[1]-1 : comb[1]+1;
   next[6] = comb[6];
   next[7] = comb[7];
   next[8] = comb[8];
-  next[9] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
   next[10] = comb[10];
   next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_B(uint8_t *comb, uint8_t *next) {
+unsigned E_turn_Lprime(uint8_t *comb, uint8_t *next) {
+  if ((next[1] = comb[4]) > 11 &&
+      (next[4] = comb[9]) > 11 &&
+      (next[5] = comb[1]%2 ? comb[1]-1 : comb[1]+1) > 11 &&
+      (next[9] = comb[5]%2 ? comb[5]-1 : comb[5]+1) > 11)
+    return 0;
   next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
-  next[3] = comb[3];
-  next[4] = comb[4];
-  next[5] = comb[2];
-  next[6] = comb[10]%2 ? comb[10]-1 : comb[10]+1;
-  next[7] = comb[7];
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[5];
-  next[11] = comb[11];
-}
-
-void E_turn_B2(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[10];
-  next[3] = comb[3];
-  next[4] = comb[4];
-  next[5] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
-  next[6] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
-  next[7] = comb[7];
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[2];
-  next[11] = comb[11];
-}
-
-void E_turn_Bprime(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[5];
-  next[3] = comb[3];
-  next[4] = comb[4];
-  next[5] = comb[10];
-  next[6] = comb[2]%2 ? comb[2]-1 : comb[2]+1;
-  next[7] = comb[7];
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
-  next[11] = comb[11];
-}
-
-void E_turn_R(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[2];
-  next[3] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
-  next[4] = comb[4];
-  next[5] = comb[5];
-  next[6] = comb[3];
-  next[7] = comb[11]%2 ? comb[11]-1 : comb[11]+1;;
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[10];
-  next[11] = comb[6];
-}
-
-void E_turn_R2(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[2];
-  next[3] = comb[11];
-  next[4] = comb[4];
-  next[5] = comb[5];
-  next[6] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
-  next[7] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[10];
-  next[11] = comb[3];
-}
-
-void E_turn_Rprime(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
-  next[2] = comb[2];
-  next[3] = comb[6];
-  next[4] = comb[4];
-  next[5] = comb[5];
-  next[6] = comb[11];
-  next[7] = comb[3]%2 ? comb[3]-1 : comb[3]+1;
-  next[8] = comb[8];
-  next[9] = comb[9];
-  next[10] = comb[10];
-  next[11] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
-}
-
-void E_turn_D(uint8_t *comb, uint8_t *next) {
-  next[0] = comb[0];
-  next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
-  next[4] = comb[4];
-  next[5] = comb[5];
   next[6] = comb[6];
   next[7] = comb[7];
-  next[8] = comb[9];
-  next[9] = comb[10];
-  next[10] = comb[11];
-  next[11] = comb[8];
+  next[8] = comb[8];
+  next[10] = comb[10];
+  next[11] = comb[11];
+  return 1;
 }
 
-void E_turn_D2(uint8_t *comb, uint8_t *next) {
+unsigned E_turn_B(uint8_t *comb, uint8_t *next) {
+  if ((next[5] = comb[2]) > 11 &&
+      (next[10] = comb[5]) > 11 &&
+      (next[2] = comb[6]%2 ? comb[6]-1 : comb[6]+1) > 11 &&
+      (next[6] = comb[10]%2 ? comb[10]-1 : comb[10]+1) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[3] = comb[3];
+  next[4] = comb[4];
+  next[7] = comb[7];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[11] = comb[11];
+  return 1;
+}
+
+unsigned E_turn_B2(uint8_t *comb, uint8_t *next) {
+  if ((next[2] = comb[10]) > 11 &&
+      (next[10] = comb[2]) > 11 &&
+      (next[5] = comb[6]%2 ? comb[6]-1 : comb[6]+1) > 11 &&
+      (next[6] = comb[5]%2 ? comb[5]-1 : comb[5]+1) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[3] = comb[3];
+  next[4] = comb[4];
+  next[7] = comb[7];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[11] = comb[11];
+  return 1;
+}
+
+unsigned E_turn_Bprime(uint8_t *comb, uint8_t *next) {
+  if ((next[2] = comb[5]) > 11 &&
+      (next[5] = comb[10]) > 11 &&
+      (next[6] = comb[2]%2 ? comb[2]-1 : comb[2]+1) > 11 &&
+      (next[10] = comb[6]%2 ? comb[6]-1 : comb[6]+1) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[3] = comb[3];
+  next[4] = comb[4];
+  next[7] = comb[7];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[11] = comb[11];
+  return 1;
+}
+
+unsigned E_turn_R(uint8_t *comb, uint8_t *next) {
+  if ((next[6] = comb[3]) > 11 &&
+      (next[11] = comb[6]) > 11 &&
+      (next[3] = comb[7]%2 ? comb[7]-1 : comb[7]+1) > 11 &&
+      (next[7] = comb[11]%2 ? comb[11]-1 : comb[11]+1) > 11)
+    return 0;
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
-  next[3] = comb[3];
   next[4] = comb[4];
   next[5] = comb[5];
-  next[6] = comb[6];
-  next[7] = comb[7];
-  next[8] = comb[10];
-  next[9] = comb[11];
-  next[10] = comb[8];
-  next[11] = comb[9];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[10] = comb[10];
+  return 1;
 }
 
-void E_turn_Dprime(uint8_t *comb, uint8_t *next) {
+unsigned E_turn_R2(uint8_t *comb, uint8_t *next) {
+  if ((next[3] = comb[11]) > 11 &&
+      (next[11] = comb[3]) > 11 &&
+      (next[6] = comb[7]%2 ? comb[7]-1 : comb[7]+1) > 11 &&
+      (next[7] = comb[6]%2 ? comb[6]-1 : comb[6]+1) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[2] = comb[2];
+  next[4] = comb[4];
+  next[5] = comb[5];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[10] = comb[10];
+  return 1;
+}
+
+unsigned E_turn_Rprime(uint8_t *comb, uint8_t *next) {
+  if ((next[3] = comb[6]) > 11 &&
+      (next[6] = comb[11]) > 11 &&
+      (next[7] = comb[3]%2 ? comb[3]-1 : comb[3]+1) > 11 &&
+      (next[11] = comb[7]%2 ? comb[7]-1 : comb[7]+1) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[2] = comb[2];
+  next[4] = comb[4];
+  next[5] = comb[5];
+  next[8] = comb[8];
+  next[9] = comb[9];
+  next[10] = comb[10];
+  return 1;
+}
+
+unsigned E_turn_D(uint8_t *comb, uint8_t *next) {
+  if ((next[8] = comb[9]) > 11 &&
+      (next[9] = comb[10]) > 11 &&
+      (next[10] = comb[11]) > 11 &&
+      (next[11] = comb[8]) > 11)
+    return 0;
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -468,10 +473,41 @@ void E_turn_Dprime(uint8_t *comb, uint8_t *next) {
   next[5] = comb[5];
   next[6] = comb[6];
   next[7] = comb[7];
-  next[8] = comb[11];
-  next[9] = comb[8];
-  next[10] = comb[9];
-  next[11] = comb[10];
+  return 1;
+}
+
+unsigned E_turn_D2(uint8_t *comb, uint8_t *next) {
+  if ((next[8] = comb[10]) > 11 &&
+      (next[9] = comb[11]) > 11 &&
+      (next[10] = comb[8]) > 11 &&
+      (next[11] = comb[9]) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[2] = comb[2];
+  next[3] = comb[3];
+  next[4] = comb[4];
+  next[5] = comb[5];
+  next[6] = comb[6];
+  next[7] = comb[7];
+  return 1;
+}
+
+unsigned E_turn_Dprime(uint8_t *comb, uint8_t *next) {
+  if ((next[8] = comb[11]) > 11 &&
+      (next[9] = comb[8]) > 11 &&
+      (next[10] = comb[9]) > 11 &&
+      (next[11] = comb[10]) > 11)
+    return 0;
+  next[0] = comb[0];
+  next[1] = comb[1];
+  next[2] = comb[2];
+  next[3] = comb[3];
+  next[4] = comb[4];
+  next[5] = comb[5];
+  next[6] = comb[6];
+  next[7] = comb[7];
+  return 1;
 }
 
 void initialize_turns(void) {
@@ -513,4 +549,4 @@ void initialize_turns(void) {
   moves[35] = E_turn_Dprime;
 }
 
-void (*moves[36])(uint8_t*, uint8_t*);
+unsigned (*moves[36])(uint8_t*, uint8_t*);
