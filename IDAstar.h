@@ -14,6 +14,8 @@ typedef struct node {
   uint8_t moves[20];  // Moves performed to reach this node
 } NODE;
 
+void IDAstar(void);
+
 // Recursive search function
 unsigned search(NODE *node, unsigned g, unsigned threshold);
 

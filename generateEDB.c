@@ -46,18 +46,6 @@
 #include "moves.h"
 #include "edatabase.h"
 
-#ifndef HALF
-  #error "HALF must be defined as 1 or 2."
-#elif HALF == 1 
-  #define FILENAME "1"
-  #define GET_INDEX(COMB) E1_get_index(COMB)
-#elif HALF == 2
-  #define FILENAME "2"
-  #define GET_INDEX(COMB) E2_get_index(COMB)
-#else
-  #error "HALF can only be 1 or 2"
-#endif
-
 static uint8_t database[E_DB_SIZE];
 static uint8_t queue[E_DB_SIZE*2][NUM_EDGES];
 static unsigned head;
@@ -72,11 +60,6 @@ int main(void) {
   database[0] = 0x0F;
   for (int i=1; i<E_DB_SIZE; i++)
     database[i] = 0xFF;
-
-  #if HALF == 2
-  database[0] = 0xFF;
-  database[21288928] = 0x0F;
-  #endif
 
   // Add first combination to the queue.
   for (uint8_t i=0; i<NUM_EDGES; i++)
@@ -119,7 +102,7 @@ int main(void) {
 
   // Write database to a file.
   int fd;
-  if ((fd=creat("pattern_databases/edges"FILENAME".patdb", 0644)) == -1) {
+  if ((fd=creat("pattern_databases/edges"FILENAME"_"TRACKED_NAME".patdb", 0644)) == -1) {
     perror("\nUnable to create file\n");
     exit(1);
   }
@@ -132,6 +115,12 @@ int main(void) {
     exit(1);
   }
   printf("\rDatabase generation 100%%\nDone.\n");
+
+  int flag = 0;
+  for (int i=0; i<E_DB_SIZE; i++)
+    if (database[i] == 0xFF)
+      flag = 1;
+  printf("Flag: %u\n", flag);
 }
 
 void breadth_first_search(void) {
@@ -139,16 +128,17 @@ void breadth_first_search(void) {
   // Add NEW combinations to the end of the queue
   int i;
   unsigned index, add, pos;
-  for (i=18; i<33; i++) {
+  for (i=18; i<36; i++) {
 
-    // If turn effects edges cubes that we care about.
+    // If turn affects edges cubes that we care about.
     if ((*moves[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)])) {
 
       // If combination hasn't been seen, keep it in the queue.
       index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);
-      printf("%u\n", i);
+
       add = index / 2;
       pos = index % 2;
+//printf("%u\n", i);
       if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
 
         // Keep combination in the queue.
@@ -159,7 +149,7 @@ void breadth_first_search(void) {
           database[add] = database[add] & (depth | 0xF0);
         else
           database[add] = database[add] & ((depth << 4) | 0x0F);
-
+//printf("%u %u \n", fill_amount, queuesize);
         // Increase fill amount.
         fill_amount++;
         if ((double)fill_amount / (E_DB_SIZE * 2) > fill_percent + .01)

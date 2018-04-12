@@ -36,20 +36,14 @@ unsigned E1_get_index(uint8_t *comb) {
   unsigned i, add = 0;
 
   // Calculate which permutation number.
-  // Solve pieces in positions 1-6
-  unsigned long long state = 0xFEDCBA9876543210;
-  for (i=0; i<5; i++) {
-    int p4 = comb[i]/2 * 4;
-    add = (11-i) * (add + (state >> p4 & 15));
-    state -= 0x1111111111111110ULL << p4;
-  }
-  add += state >> comb[5]/2 * 4 & 15; 
+  for (i=0; i<TRACKED_EDGES; i++)
+    add += E1_get_loc(comb, i) * (fact[NUM_EDGES-i-1]/fact[NUM_EDGES-TRACKED_EDGES]); 
 
   // Scale for permutation offset.
-  add *= 64;  // power(NUM_EFACES, NUM_EDGES-6) 
+  add *= two_to_the[TRACKED_EDGES];  // power(NUM_EFACES, TRACKED_EDGES) 
 
   // Calculate which orientation number for orientation offset.
-  for (i=0; i<6; i++)
+  for (i=0; i<TRACKED_EDGES; i++)
       add += comb[i] % NUM_EFACES * two_to_the[i];
 
   return add;
@@ -59,49 +53,70 @@ unsigned E2_get_index(uint8_t *comb) {
   unsigned i, add = 0;
 
   // Calculate which permutation number.
-  unsigned long long state = 0xFEDCBA9876543210;
-  for (i=11; i>6; i--) {
-    int p4 = comb[i]/2 * 4;
-    add = i * (add + (state >> p4 & 15));
-    state -= 0x1111111111111110ULL << p4;
-  }
-  add += state >> comb[6]/2 * 4 & 15; 
+  for (i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
+    add += E2_get_loc(comb, i) * (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
 
   // Scale for permutation offset.
-  add *= 64;  // power(NUM_EFACES, NUM_EDGES-6) 
+  add *= two_to_the[TRACKED_EDGES];  // power(NUM_EFACES, TRACKED_EDGES) 
 
   // Calculate which orientation number for orientation offset.
-  for (i=0; i<6; i++)
-      add += comb[i] % NUM_EFACES * two_to_the[i];
+  for (i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
+      add += comb[i] % NUM_EFACES * two_to_the[i-(NUM_EDGES-TRACKED_EDGES)];
 
   return add;
 }
 
 void load_edbs(uint8_t *edb1, uint8_t *edb2) {
   int fd;
-  if ((fd = open("pattern_databases/edges1.patdb", O_RDONLY)) == -1) {
-    perror("Could not open edges1.patdb");
+  if ((fd = open("pattern_databases/edges1_" TRACKED_NAME ".patdb", O_RDONLY)) == -1) {
+    perror("Could not open edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
   if (read(fd, edb1, E_DB_SIZE) == -1) {
-    perror("Problem reading edges1.patdb");
+    perror("Problem reading edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
   if (close(fd) == -1) {
-    perror("Problem closing edges1.patdb");
+    perror("Problem closing edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
 
-  if ((fd = open("pattern_databases/edges2.patdb", O_RDONLY)) == -1) {
-    perror("Could not open edges2.patdb");
+  if ((fd = open("pattern_databases/edges2_" TRACKED_NAME ".patdb", O_RDONLY)) == -1) {
+    perror("Could not open edges2_" TRACKED_NAME ".patdb");
     exit(1);
   }
   if (read(fd, edb2, E_DB_SIZE) == -1) {
-    perror("Problem reading edges2.patdb");
+    perror("Problem reading edges2_" TRACKED_NAME ".patdb");
     exit(1);
   }
   if (close(fd) == -1) {
-    perror("Problem closing edges2.patdb");
+    perror("Problem closing edges2_" TRACKED_NAME ".patdb");
     exit(1);
   }
 }
+
+ // Get location of edge among remaining edges.
+unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
+  unsigned i, loc=0;
+
+  for (i=0; i<NUM_EDGES; i++) {
+    // Increment if piece is larger than tested edge.
+    if (comb[i]/2 > edge)
+      loc++;
+    if (comb[i]/2 == edge)
+      return loc;
+  }
+}
+
+unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
+  unsigned i, loc=0;
+
+  for (i=(NUM_EDGES-TRACKED_EDGES); i<NUM_EDGES+(NUM_EDGES-TRACKED_EDGES); i++) {
+    // Increment if piece is smaller than tested edge.
+    if ((comb[i%NUM_EDGES]/2-(NUM_EDGES-TRACKED_EDGES))%12 > (edge+TRACKED_EDGES)%NUM_EDGES)
+      loc++;
+    if (comb[i%NUM_EDGES]/2 == edge)
+      return loc;
+  }
+}
+

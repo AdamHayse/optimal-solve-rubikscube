@@ -4,4 +4,9 @@ generateEDB1
 generateEDB2
 testheuristic
 project presentation
-IDAstar
+IDAstar6
+do_search.c
+generateEDB1_6
+generateEDB2_6
+pattern_databases/edges1_6.patdb
+pattern_databases/edges2_6.patdb

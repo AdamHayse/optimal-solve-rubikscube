@@ -15,14 +15,17 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "moves.h"
+#include "searchmoves.h"
 #include "mymath.h"
 #include "cdatabase.h"
 #include "edatabase.h"
+#include "IDAstar.h"
 
-static uint8_t cdatabase[C_DB_SIZE];
-static uint8_t e1database[E_DB_SIZE];
-static uint8_t e2database[E_DB_SIZE];
+uint8_t cdatabase[C_DB_SIZE];
+uint8_t e1database[E_DB_SIZE];
+uint8_t e2database[E_DB_SIZE];
+static NODE solved;
+static NODE scrambled;
 
 int main(void) {
 
@@ -30,123 +33,74 @@ int main(void) {
   load_cdb(cdatabase);
   load_edbs(e1database, e2database);
 
+  // Set up solved state node.
+  for (int i=0; i<8; i++)
+    solved.corners[i] = 3*i;
+  for (int i=0; i<12; i++)
+    solved.edges[i] = 2*i;
+
   // Get scramble algorithm and execute it on solved combination.
   char scramble[256];
+  NODE states[64];  // Can enter 64 moves.
+  states[0] = solved;
   while (1) {
 
     // Get scramble algorithm from user.
     fgets(scramble, 256, stdin);
 
-    // Initialize cube as solved.
-    uint8_t corners[128][8];
-    for (uint8_t i=0; i<8; i++)
-      corners[0][i] = 3*i;
-
-    uint8_t edges[128][12];
-    for (uint8_t i=0; i<12; i++)
-      edges[0][i] = 2*i;
-
     // Tokenize user input and perform moves.
     char* token = strtok(scramble, " \n()[]\t{}");
     int i=0;
     while (token) {
-      if (strcmp(token, "U") == 0) {
-        C_turn_U(corners[i], corners[i+1]);
-        E_turn_U(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "U2") == 0) {
-        C_turn_U2(corners[i], corners[i+1]);
-        E_turn_U2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "U'") == 0) {
-        C_turn_Uprime(corners[i], corners[i+1]);
-        E_turn_Uprime(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "F") == 0) {
-        C_turn_F(corners[i], corners[i+1]);
-        E_turn_F(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "F2") == 0) {
-        C_turn_F2(corners[i], corners[i+1]);
-        E_turn_F2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "F'") == 0) {
-        C_turn_Fprime(corners[i], corners[i+1]);
-        E_turn_Fprime(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "L") == 0) {
-        C_turn_L(corners[i], corners[i+1]);
-        E_turn_L(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "L2") == 0) {
-        C_turn_L2(corners[i], corners[i+1]);
-        E_turn_L2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "L'") == 0) {
-        C_turn_Lprime(corners[i], corners[i+1]);
-        E_turn_Lprime(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "B") == 0) {
-        C_turn_B(corners[i], corners[i+1]);
-        E_turn_B(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "B2") == 0) {
-        C_turn_B2(corners[i], corners[i+1]);
-        E_turn_B2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "B'") == 0) {
-        C_turn_Bprime(corners[i], corners[i+1]);
-        E_turn_Bprime(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "R") == 0) {
-        C_turn_R(corners[i], corners[i+1]);
-        E_turn_R(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "R2") == 0) {
-        C_turn_R2(corners[i], corners[i+1]);
-        E_turn_R2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "R'") == 0) {
-        C_turn_Rprime(corners[i], corners[i+1]);
-        E_turn_Rprime(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "D") == 0) {
-        C_turn_D(corners[i], corners[i+1]);
-        E_turn_D(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "D2") == 0) {
-        C_turn_D2(corners[i], corners[i+1]);
-        E_turn_D2(edges[i], edges[i+1]);
-        i++;
-      }
-      else if (strcmp(token, "D'") == 0) {
-        C_turn_Dprime(corners[i], corners[i+1]);
-        E_turn_Dprime(edges[i], edges[i+1]);
-        i++;
+      if (strcmp(token, "U") == 0)
+        turn_U(&states[i], &states[i+1]);
+      else if (strcmp(token, "U2") == 0)
+        turn_U2(&states[i], &states[i+1]);
+      else if (strcmp(token, "U'") == 0)
+        turn_Uprime(&states[i], &states[i+1]);
+      else if (strcmp(token, "F") == 0)
+        turn_F(&states[i], &states[i+1]);
+      else if (strcmp(token, "F2") == 0)
+        turn_F2(&states[i], &states[i+1]);
+      else if (strcmp(token, "F'") == 0)
+        turn_Fprime(&states[i], &states[i+1]);
+      else if (strcmp(token, "L") == 0)
+        turn_L(&states[i], &states[i+1]);
+      else if (strcmp(token, "L2") == 0)
+        turn_L2(&states[i], &states[i+1]);
+      else if (strcmp(token, "L'") == 0)
+        turn_Lprime(&states[i], &states[i+1]);
+      else if (strcmp(token, "B") == 0)
+        turn_B(&states[i], &states[i+1]);
+      else if (strcmp(token, "B2") == 0)
+        turn_B2(&states[i], &states[i+1]);
+      else if (strcmp(token, "B'") == 0)
+        turn_Bprime(&states[i], &states[i+1]);
+      else if (strcmp(token, "R") == 0)
+        turn_R(&states[i], &states[i+1]);
+      else if (strcmp(token, "R2") == 0)
+        turn_R2(&states[i], &states[i+1]);
+      else if (strcmp(token, "R'") == 0)
+        turn_Rprime(&states[i], &states[i+1]);
+      else if (strcmp(token, "D") == 0)
+        turn_D(&states[i], &states[i+1]);
+      else if (strcmp(token, "D2") == 0)
+        turn_D2(&states[i], &states[i+1]);
+      else if (strcmp(token, "D'") == 0)
+        turn_Dprime(&states[i], &states[i+1]);
+      else {
+        printf("Invalid scramble");
+        exit(0);
       }
       token = strtok(NULL, " \n()[]\t{}");
+      i++;
     }
-
+    scrambled = states[i];
     // Print resulting combination and database results.
-    display_cube(corners[i], edges[i]);
-    printf("%u\n", valid_comb(corners[i], edges[i]));
-    display_scramble(corners[i], edges[i]);
+    display_cube(scrambled.corners, scrambled.edges);
+    printf("%u\n", valid_comb(scrambled.corners, scrambled.edges));
+    display_scramble(scrambled.corners, scrambled.edges);
+    printf("%u\n", E2_get_index(scrambled.edges));
   }
 }
 

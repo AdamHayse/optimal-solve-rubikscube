@@ -17,7 +17,7 @@ static NODE solved;
 static NODE scrambled;
 
 // IDA* driver
-int main(void) {
+void IDAstar(void) {
 
   // Load pattern databases and initialize turns.
   load_cdb(cdatabase);
@@ -28,7 +28,7 @@ int main(void) {
   while (1) {
     // Get solved and scrambled states.
     get_scramble();
-printf("%u\n", E2_path_length(scrambled.edges, e2database));
+
     // Get initial estimate to solve.
     unsigned threshold = scrambled.h;
     int length;
@@ -88,9 +88,6 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
 
   // Perform search on each child node.
   for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
-    printf("Turning ");
-    printmove(nodelist[i].moves[g]);
-    printf("\n");
 
     unsigned length = search(nodelist+i, g+1, threshold);
     if (length == FOUND) {
@@ -105,12 +102,12 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
 
 // Get the largest admissible heuristic.
 uint8_t maxh(uint8_t c, uint8_t e1, uint8_t e2) {
-  if (c > e1 && c > e2)
+  if (c >= e1 && c >= e2)
     return c;
-  if (e1 > c && e1 > e2)
-    return e1;
-  else
+  else if (e2 >= c && e2 >= e1)
     return e2;
+  else
+    return e1;
 }
 
 // Get scramble from the user.
