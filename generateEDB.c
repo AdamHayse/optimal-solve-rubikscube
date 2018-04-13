@@ -74,11 +74,11 @@ int main(void) {
     for (int i=0; i<E_DB_SIZE; i++) {
 
       if (database[i]>>4 == depth) {
-        E1_decode_index(i*2, comb);
+        FIND_COMB(i*2, comb);
         breadth_first_search();
       }
       if ((database[i]&0x0F) == depth) {
-        E1_decode_index(i*2+1, comb);
+        FIND_COMB(i*2+1, comb);
         breadth_first_search();
       }
     }
@@ -120,11 +120,12 @@ void breadth_first_search(void) {
       putchar('\t');
       for(int i=0; i<12; i++)
         printf("%u, ", temp[i]);
-      putchar('\n');*/
+      putchar('\n'); */
 
 
       // If new combination hasn't been seen, add value of depth+1 to database.
       index = GET_INDEX(temp);
+     // printf("%u\n", index);
       add = index / 2;
       pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
       if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {

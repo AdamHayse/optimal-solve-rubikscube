@@ -8,10 +8,12 @@
 #define NUM_EDGES  12
 #define NUM_EFACES 2U
 
-
-#if HALF == 1
+#ifndef HALF
+  #define HALF 1
+#elif HALF == 1
   #define FILENAME "1"
   #define GET_INDEX(COMB) E1_get_index(COMB)
+  #define FIND_COMB(INDEX, COMB) E1_decode_index(INDEX, COMB)
   #define OP >
   #if TRACKED_EDGES == 6
     #define TRACKED_NAME "6"
@@ -31,6 +33,7 @@
 #elif HALF == 2
   #define FILENAME "2"
   #define GET_INDEX(COMB) E2_get_index(COMB)
+  #define FIND_COMB(INDEX, COMB) E2_decode_index(INDEX, COMB)
   #define OP <
   #if TRACKED_EDGES == 6
     #define TRACKED_NAME "6"
@@ -48,7 +51,7 @@
     #error "TRACKED_EDGES must be 6, 7, or 8"
   #endif
 #else
-  #define HALF == 1  // Default value
+  #error "HALF can only be 1 or 2"
 #endif
 
 

@@ -100,7 +100,12 @@ int main(void) {
     display_cube(scrambled.corners, scrambled.edges);
     printf("%u\n", valid_comb(scrambled.corners, scrambled.edges));
     display_scramble(scrambled.corners, scrambled.edges);
-    printf("%u\n", E2_get_index(scrambled.edges));
+
+    unsigned index = E1_get_index(scrambled.edges);
+    printf("%u\n", index);
+    uint8_t temp[12];
+    E1_decode_index(index, temp);
+    printf("%u\n", E1_get_index(temp));
   }
 }
 
