@@ -120,7 +120,7 @@ static void breadth_first_search(void) {
   for (i=0; i<18; i++) {
 
     // Put candidate combination at end of queue.
-    (*moves[i])(queue[head], queue[(head+queuesize)%(C_DB_SIZE*2)]);
+    (*movesC[i])(queue[head], queue[(head+queuesize)%(C_DB_SIZE*2)]);
 
     // If combination hasn't been seen, keep it in the queue.
     index = C_get_index(queue[(head+queuesize)%(C_DB_SIZE*2)]);

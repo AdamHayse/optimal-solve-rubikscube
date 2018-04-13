@@ -128,10 +128,10 @@ void breadth_first_search(void) {
   // Add NEW combinations to the end of the queue
   int i;
   unsigned index, add, pos;
-  for (i=18; i<36; i++) {
+  for (i=0; i<18; i++) {
 
     // If turn affects edges cubes that we care about.
-    if ((*moves[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)])) {
+    if ((*movesE[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)])) {
 
       // If combination hasn't been seen, keep it in the queue.
       index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);
