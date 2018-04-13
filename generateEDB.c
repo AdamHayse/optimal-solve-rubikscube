@@ -47,9 +47,9 @@
 #include "edatabase.h"
 
 static uint8_t database[E_DB_SIZE];
-static uint8_t queue[E_DB_SIZE*2][NUM_EDGES];
-static unsigned head;
-static unsigned queuesize;
+static uint8_t comb[NUM_EDGES];
+static uint8_t temp[NUM_EDGES];
+
 static unsigned depth;
 
 static void breadth_first_search(void);
@@ -61,43 +61,28 @@ int main(void) {
   for (int i=1; i<E_DB_SIZE; i++)
     database[i] = 0xFF;
 
-  // Add first combination to the queue.
-  for (uint8_t i=0; i<NUM_EDGES; i++)
-    queue[0][i] = NUM_EFACES*i;
-
-  // Add 0xFF to signal increase in depth.
-  queue[1][0] = 0xFF;
-
-  // Finalize queue setup.
-  queuesize = 2;
-  depth = 1;
-  head = 0;
-
   // Put all turn functions in a static array of functions called moves.
   initialize_turns();
 
   // Show progress tracker.
   update_percent();
 
-  // Continue BFS until only element in queue is 0xFF.
-  while (1) {
+  // Do BFS by expanding only nodes of a given depth on each pass.
+  // Max number of moves to solve any state is 10.
+  depth = 0;
+  while (depth<10) {
+    for (int i=0; i<E_DB_SIZE; i++) {
 
-    // Check to see if there is a change in depth.
-    if (queue[head][0] == 0xFF) {
-      if (queuesize == 1)
-        break;
-
-      // Increment depth.
-      depth++;
-
-      // Place another 0xFF at end of queue to signal change in depth.
-      queue[(head+queuesize)%(E_DB_SIZE*2)][0] = 0xFF;
-
-      // Move head of queue past the depth change signal.
-      head = (head+1)%(E_DB_SIZE*2);
+      if (database[i]>>4 == depth) {
+        E1_decode_index(i*2, comb);
+        breadth_first_search();
+      }
+      if ((database[i]&0x0F) == depth) {
+        E1_decode_index(i*2+1, comb);
+        breadth_first_search();
+      }
     }
-    else
-      breadth_first_search();
+    depth++;
   }
 
   // Write database to a file.
@@ -126,30 +111,30 @@ int main(void) {
 void breadth_first_search(void) {
 
   // Add NEW combinations to the end of the queue
-  int i;
   unsigned index, add, pos;
-  for (i=0; i<18; i++) {
-
+  for (int i=0; i<18; i++) {
     // If turn affects edges cubes that we care about.
-    if ((*movesE[i])(queue[head], queue[(head+queuesize)%(E_DB_SIZE*2)])) {
+    if ((*movesE[i])(comb, temp)) {
+ /*     for(int i=0; i<12; i++)
+        printf("%u, ", comb[i]);
+      putchar('\t');
+      for(int i=0; i<12; i++)
+        printf("%u, ", temp[i]);
+      putchar('\n');*/
 
-      // If combination hasn't been seen, keep it in the queue.
-      index = GET_INDEX(queue[(head+queuesize)%(E_DB_SIZE*2)]);
 
+      // If new combination hasn't been seen, add value of depth+1 to database.
+      index = GET_INDEX(temp);
       add = index / 2;
-      pos = index % 2;
-//printf("%u\n", i);
+      pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
       if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
 
-        // Keep combination in the queue.
-        queuesize++;
-
-        // Add depth to database.
+        // Add depth+1 to database.
         if (pos)
-          database[add] = database[add] & (depth | 0xF0);
+          database[add] = database[add] & (depth+1 | 0xF0);
         else
-          database[add] = database[add] & ((depth << 4) | 0x0F);
-//printf("%u %u \n", fill_amount, queuesize);
+          database[add] = database[add] & ((depth+1 << 4) | 0x0F);
+
         // Increase fill amount.
         fill_amount++;
         if ((double)fill_amount / (E_DB_SIZE * 2) > fill_percent + .01)
@@ -157,8 +142,4 @@ void breadth_first_search(void) {
       }
     }
   }
-
-  // Manage queue.
-  head = (head+1)%(E_DB_SIZE*2);  // Circular array.
-  queuesize--;
 }

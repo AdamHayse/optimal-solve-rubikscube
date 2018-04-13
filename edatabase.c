@@ -120,3 +120,28 @@ unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
   }
 }
 
+void E1_decode_index(unsigned index, uint8_t *comb) {
+  unsigned temp = index/ two_to_the[TRACKED_EDGES];
+  for (int i=0; i<12; i++)
+    comb[i] = 24;
+  unsigned long long state = 0xfedcba9876543210ULL;
+  for (int i = 0; i < 6; i++) {
+    int p4 = temp/(fact[11-i]/fact[6]) * 4;
+    temp %= (fact[11-i]/fact[6]);
+    comb[(state >> p4) & 15] = 2*i + ((index % two_to_the[TRACKED_EDGES] >> (5-i)) % 2);
+    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
+    state = (state & mask) | ((state >> 4) & ~mask);
+  }    
+}
+
+void E2_decode_index(unsigned index, uint8_t *comb) {
+  for (int i=0; i<12; i++)
+    comb[i] = NUM_EDGES-TRACKED_EDGES-1;
+  unsigned long long state = 0xfedcba9876543210ULL;
+  for (int i = NUM_EDGES-TRACKED_EDGES; i < TRACKED_EDGES; i++) {
+    int p4 = index/(fact[17-i]/fact[6]) * 4;
+    comb[(((state >> p4) & 15) + 6) % 12 ] = i;
+    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
+    state = (state & mask) | ((state >> 4) & ~mask);
+  }
+}

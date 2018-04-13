@@ -66,4 +66,7 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2);
 unsigned E1_get_loc(uint8_t *comb, unsigned edge);
 unsigned E2_get_loc(uint8_t *comb, unsigned edge);
 
+void E1_decode_index(unsigned index, uint8_t *comb);
+void E2_decode_index(unsigned index, uint8_t *comb);
+
 #endif
