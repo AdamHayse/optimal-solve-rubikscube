@@ -10,7 +10,8 @@
 
 #ifndef HALF
   #define HALF 1
-#elif HALF == 1
+#endif
+#if HALF == 1
   #define FILENAME "1"
   #define GET_INDEX(COMB) E1_get_index(COMB)
   #define FIND_COMB(INDEX, COMB) E1_decode_index(INDEX, COMB)
@@ -26,7 +27,7 @@
   #elif TRACKED_EDGES == 8
     #define TRACKED_NAME "8"
     #define BOUND 15
-    #define E_DB_SIZE 25544675200UL   // 12!/4! x 2^8 / 2
+    #define E_DB_SIZE 25544675200ULL   // 12!/4! x 2^8 / 2
   #else
     #error "TRACKED_EDGES must be 6, 7, or 8"
   #endif
@@ -46,7 +47,7 @@
   #elif TRACKED_EDGES == 8
     #define TRACKED_NAME "8"
     #define BOUND 8
-    #define E_DB_SIZE 25544675200UL   // 12!/4! x 2^8 / 2
+    #define E_DB_SIZE 25544675200ULL   // 12!/4! x 2^8 / 2
   #else
     #error "TRACKED_EDGES must be 6, 7, or 8"
   #endif
@@ -62,14 +63,14 @@ uint8_t E1_path_length(uint8_t *comb, uint8_t *data);
 uint8_t E2_path_length(uint8_t *comb, uint8_t *data);
 
 // Get index of stored combination.
-unsigned E1_get_index(uint8_t *comb);
-unsigned E2_get_index(uint8_t *comb);
+uint64_t E1_get_index(uint8_t *comb);
+uint64_t E2_get_index(uint8_t *comb);
 
 void load_edbs(uint8_t *edb1, uint8_t *edb2);
 unsigned E1_get_loc(uint8_t *comb, unsigned edge);
 unsigned E2_get_loc(uint8_t *comb, unsigned edge);
 
-void E1_decode_index(unsigned index, uint8_t *comb);
-void E2_decode_index(unsigned index, uint8_t *comb);
+void E1_decode_index(uint64_t index, uint8_t *comb);
+void E2_decode_index(uint64_t index, uint8_t *comb);
 
 #endif

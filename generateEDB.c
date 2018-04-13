@@ -111,7 +111,7 @@ int main(void) {
 void breadth_first_search(void) {
 
   // Add NEW combinations to the end of the queue
-  unsigned index, add, pos;
+  uint64_t index, add, pos;
   for (int i=0; i<18; i++) {
     // If turn affects edges cubes that we care about.
     if ((*movesE[i])(comb, temp)) {

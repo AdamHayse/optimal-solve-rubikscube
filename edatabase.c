@@ -13,8 +13,8 @@
 
 // Retrieve stored path length from first database.
 uint8_t E1_path_length(uint8_t *comb, uint8_t *database) {
-  unsigned index = E1_get_index(comb);
-  unsigned add = index / 2;
+  uint64_t index = E1_get_index(comb);
+  uint64_t add = index / 2;
   unsigned pos = index % 2;
 
   // If index is odd, get right 4 bits.  Else, get left 4 bits.
@@ -23,8 +23,8 @@ uint8_t E1_path_length(uint8_t *comb, uint8_t *database) {
 
 // Retrieve stored path length from second database.
 uint8_t E2_path_length(uint8_t *comb, uint8_t *database) {
-  unsigned index = E2_get_index(comb);
-  unsigned add = index / 2;
+  uint64_t index = E2_get_index(comb);
+  uint64_t add = index / 2;
   unsigned pos = index % 2;
 
   // If index is odd, get right 4 bits.  Else, get left 4 bits.
@@ -32,8 +32,8 @@ uint8_t E2_path_length(uint8_t *comb, uint8_t *database) {
 }
 
 // Get index of stored combination.
-unsigned E1_get_index(uint8_t *comb) {
-  unsigned i, add = 0;
+uint64_t E1_get_index(uint8_t *comb) {
+  uint64_t i, add = 0;
 
   // Calculate which permutation number.
   for (i=0; i<TRACKED_EDGES; i++) {
@@ -53,8 +53,8 @@ unsigned E1_get_index(uint8_t *comb) {
   return add;
 }
 
-unsigned E2_get_index(uint8_t *comb) {
-  unsigned i, add = 0;
+uint64_t E2_get_index(uint8_t *comb) {
+  uint64_t i, add = 0;
 
   // Calculate which permutation number.
   for (i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
@@ -130,8 +130,8 @@ unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
   }
 }
 
-void E1_decode_index(unsigned index, uint8_t *comb) {
-  unsigned temp = index/two_to_the[TRACKED_EDGES];
+void E1_decode_index(uint64_t index, uint8_t *comb) {
+  uint64_t temp = index/two_to_the[TRACKED_EDGES];
   for (int i=0; i<NUM_EDGES; i++)
     comb[i] = TRACKED_EDGES*2;
   unsigned long long state = 0xfedcba9876543210ULL;
@@ -144,7 +144,7 @@ void E1_decode_index(unsigned index, uint8_t *comb) {
   }    
 }
 
-void E2_decode_index(unsigned index, uint8_t *comb) {
+void E2_decode_index(uint64_t index, uint8_t *comb) {
   unsigned temp = index/two_to_the[TRACKED_EDGES];
   for (int i=0; i<NUM_EDGES; i++)
     comb[i] = (NUM_EDGES-TRACKED_EDGES)*2-1;
