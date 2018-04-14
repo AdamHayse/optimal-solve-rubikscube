@@ -6,8 +6,6 @@
  *  Example: (R U R' U') (R' F R2 U') R' U' (R U R' F')
  */
 
-#include "testheuristic.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -20,6 +18,7 @@
 #include "cdatabase.h"
 #include "edatabase.h"
 #include "IDAstar.h"
+#include "testheuristic.h"
 
 uint8_t cdatabase[C_DB_SIZE];
 uint8_t e1database[E_DB_SIZE];
@@ -27,7 +26,7 @@ uint8_t e2database[E_DB_SIZE];
 static NODE solved;
 static NODE scrambled;
 
-int main(void) {
+void test_heuristic(void) {
 
   // Load databases.
   load_cdb(cdatabase);
@@ -46,7 +45,8 @@ int main(void) {
   while (1) {
 
     // Get scramble algorithm from user.
-    fgets(scramble, 256, stdin);
+    if (fgets(scramble, 256, stdin) == NULL)
+      exit(0);
 
     // Tokenize user input and perform moves.
     char* token = strtok(scramble, " \n()[]\t{}");
@@ -96,16 +96,49 @@ int main(void) {
       i++;
     }
     scrambled = states[i];
-    // Print resulting combination and database results.
+
+    // Show graphical representation of the scramble.
     display_cube(scrambled.corners, scrambled.edges);
-    printf("%u\n", valid_comb(scrambled.corners, scrambled.edges));
+
+    // Verify that the scramble results in a valid cube state.
+    if (valid_comb(scrambled.corners, scrambled.edges))
+      printf("Valid cube state.\n");
+    else {
+      printf("***Invalid cube state.***\n");
+
+    }
+
+    // Show array representation of the scramble.
     display_scramble(scrambled.corners, scrambled.edges);
 
-    unsigned index = E1_get_index(scrambled.edges);
-    printf("%u\n", index);
-    uint8_t temp[12];
-    E1_decode_index(index, temp);
-    printf("%u\n", E1_get_index(temp));
+    // Check that bijectivity of edge encodes and decodes is preserved.
+    int64_t difference;
+    if ((difference=E1_bijective(scrambled.edges)) == 0)
+      printf("E1 Encode/decode function is bijective for scramble.\n");
+    else {
+      printf("***E1 NOT BIJECTIVE***\n  difference = %ld\n", difference);
+      // Get decode.
+      int64_t index = E1_get_index(scrambled.edges);
+      uint8_t temp[NUM_EDGES];
+      E1_decode_index(index, temp);
+      // Print decode.
+      for (unsigned i=0; i<NUM_EDGES; i++)
+        printf("%2u, ", temp[i]);
+      putchar('\n');
+    }
+    if ((difference=E2_bijective(scrambled.edges)) == 0)
+      printf("E2 Encode/decode function is bijective for scramble.\n");
+    else {
+      printf("***E2 NOT BIJECTIVE***\n  difference = %ld\n", difference);
+      // Get decode.
+      int64_t index = E2_get_index(scrambled.edges);
+      uint8_t temp[NUM_EDGES];
+      E2_decode_index(index, temp);
+      // Print decode.
+      for (unsigned i=0; i<NUM_EDGES; i++)
+        printf("%2u, ", temp[i]);
+      putchar('\n');
+    }
   }
 }
 
@@ -195,15 +228,15 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
 
   // Test 3: Check edge and corner permutation.
   int even_corners=0, even_edges=0, leftmost=0, pos=0, count=0;
-  int16_t vis_edges = 0xF000;
+  int16_t vis_edges = 0x0000;
   int8_t vis_corners = 0x00;
 
   // Count number of even corner cycles.
   while (vis_corners != -1) {
 
     // If unvisited, Set corner at pos as visited and get new pos.  Increment count.
-    if (!(vis_corners & 1 << 7 - pos)) {
-      vis_corners = vis_corners | 1 << 7 - pos;
+    if (!(vis_corners & 1 << (7-pos))) {
+      vis_corners = vis_corners | 1 << (7-pos);
       pos = corners[pos]/3;
       count++;
     }
@@ -213,7 +246,7 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
         even_corners++;
       count = 0;
       // Increment leftmost until there is a pos that is unvisited.  Set new pos.
-      for (i=vis_corners<<leftmost; i < 0; leftmost++)
+      for (i=vis_corners<<leftmost; i<0; leftmost++)
         i = i << 1;
       pos = leftmost;
     }
@@ -227,11 +260,11 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
   int16_t j;
   
   // Count number of even edge cycles.
-  while (vis_edges != -1) {
+  while (vis_edges != 0XFFF) {
 
     // If unvisited, Set edge at pos as visited and get new pos.  Increment count.
-    if (!(vis_edges & 1 << 11 - pos)) {
-      vis_edges = vis_edges | 1 << 11 - pos;
+    if (!(vis_edges & 1 << (11-pos))) {
+      vis_edges = vis_edges | 1 << (11-pos);
       pos = edges[pos]/2;
       count++;
     }
@@ -242,7 +275,7 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
       count = 0;
 
       // Increment leftmost until there is a pos that is unvisited.  Set new pos.
-      for (j=vis_edges<<4+leftmost; j < 0; leftmost++)
+      for (j=vis_edges<<(4+leftmost); j < 0; leftmost++)
         j = j << 1;
       pos = leftmost;
     }
@@ -260,11 +293,30 @@ unsigned valid_comb(uint8_t *corners, uint8_t *edges) {
 }
 
 void display_scramble(uint8_t *corners, uint8_t *edges) {
-  for (int i=0; i<8; i++)
-    printf("%u, ", corners[i]);
-  putchar('\n');
-  for (int i=0; i<12; i++)
-    printf("%u, ", edges[i]);
-  putchar('\n');
+  printf("Corners: {%2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u}\n", corners[0], corners[1], corners[2], corners[3], corners[4], corners[5], corners[6], corners[7]);
+  printf("Edges:   {%2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u, %2u}\n", edges[0], edges[1], edges[2], edges[3], edges[4], edges[5], edges[6], edges[7], edges[8], edges[9], edges[10], edges[11]);
+}
 
+int64_t E1_bijective(uint8_t *edges) {
+    // Encode
+    int64_t index = E1_get_index(edges);
+
+    // Decode
+    uint8_t temp[NUM_EDGES];
+    E1_decode_index(index, temp);
+
+    // Encode again and return difference.
+    return index - E1_get_index(temp);
+}
+
+int64_t E2_bijective(uint8_t *edges) {
+    // Encode
+    int64_t index = E2_get_index(edges);
+
+    // Decode
+    uint8_t temp[NUM_EDGES];
+    E2_decode_index(index, temp);
+
+    // Encode again and return difference.
+    return index - E2_get_index(temp);
 }

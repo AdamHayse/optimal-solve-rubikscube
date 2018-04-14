@@ -21,18 +21,18 @@
 # .SUFFIXES: .c
 
 
-CFLAGS ?=-std=c99 -mcmodel=medium -pedantic -O2
+CFLAGS ?=-std=c99 -Wall -Wextra -pedantic -O2 
 
-all: generateCDB testheuristic6 testheuristic7 testheuristic8 IDAstar6 generateEDB1_6 generateEDB2_6 generateEDB1_7 generateEDB2_7 generateEDB1_8 generateEDB2_8
+all: generateCDB testscrambles6 testscrambles7 testscrambles8 testbijective6 testbijective7 testbijective8 IDAstar6 generateEDB1_6 generateEDB2_6 generateEDB1_7 generateEDB2_7 generateEDB1_8 generateEDB2_8
 
 generateEDB1_6: generateEDB.c moves.c edatabase.c mymath.c database.c
-	gcc -D HALF=2 -D TRACKED_EDGES=6 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
+	gcc -D HALF=1 -D TRACKED_EDGES=6 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
 
 generateEDB1_7: generateEDB.c moves.c edatabase.c mymath.c database.c
-	gcc -D HALF=2 -D TRACKED_EDGES=7 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
+	gcc -D HALF=1 -D TRACKED_EDGES=7 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
 
 generateEDB1_8: generateEDB.c moves.c edatabase.c mymath.c database.c
-	gcc -D HALF=2 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
+	gcc -D HALF=1 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c -mcmodel=medium $(CFLAGS) -o $@
 
 generateEDB2_6: generateEDB.c moves.c edatabase.c mymath.c database.c
 	gcc -D HALF=2 -D TRACKED_EDGES=6 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
@@ -41,19 +41,28 @@ generateEDB2_7: generateEDB.c moves.c edatabase.c mymath.c database.c
 	gcc -D HALF=2 -D TRACKED_EDGES=7 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
 
 generateEDB2_8: generateEDB.c moves.c edatabase.c mymath.c database.c
-	gcc -D HALF=2 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
+	gcc -D HALF=2 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c -mcmodel=medium $(CFLAGS) -o $@
 
 generateCDB: generateCDB.c moves.c cdatabase.c mymath.c database.c
 	gcc generateCDB.c moves.c cdatabase.c mymath.c database.c $(CFLAGS) -o $@
 
-testheuristic6: testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
-	gcc -D TRACKED_EDGES=6 testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
+testscrambles6: testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
+	gcc -D TRACKED_EDGES=6 testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
 
-testheuristic7: testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
-	gcc -D TRACKED_EDGES=6 testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
+testscrambles7: testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
+	gcc -D TRACKED_EDGES=6 testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
 
-testheuristic8: testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
-	gcc -D TRACKED_EDGES=6 testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
+testscrambles8: testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
+	gcc -D TRACKED_EDGES=6 testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
+
+testbijective6: testbijective.c edatabase.c mymath.c
+	gcc -D TRACKED_EDGES=6 testbijective.c edatabase.c mymath.c $(CFLAGS) -o $@
+
+testbijective7: testbijective.c edatabase.c mymath.c
+	gcc -D TRACKED_EDGES=7 testbijective.c edatabase.c mymath.c $(CFLAGS) -o $@
+
+testbijective8: testbijective.c edatabase.c mymath.c
+	gcc -D TRACKED_EDGES=8 testbijective.c edatabase.c mymath.c $(CFLAGS) -o $@
 
 IDAstar6: do_search.c searchmoves.c edatabase.c cdatabase.c mymath.c database.c IDAstar.c
 	gcc -D TRACKED_EDGES=6 do_search.c searchmoves.c edatabase.c cdatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@

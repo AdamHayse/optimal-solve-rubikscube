@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 
-#ifndef EDATABASE_H
-  #define OP <
-  #define BOUND 2
-#endif
-
 
 // Functions for all moves that can be performed.
 void C_turn_U(uint8_t *comb, uint8_t *next);

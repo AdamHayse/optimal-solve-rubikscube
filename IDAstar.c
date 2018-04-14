@@ -47,7 +47,7 @@ void IDAstar(void) {
     }
 
     // Print solution.
-    for (int i=0; i<threshold; i++)
+    for (unsigned i=0; i<threshold; i++)
       printmove(solved.moves[i]);
 
     putchar('\n');
@@ -70,14 +70,13 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
 
   // Assign all previous moves up to this point to new child nodes.
   NODE nodelist[g ? 15 : 18];
-  int i, j;
-  for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++)
-    for (j=0; j<g; j++)
+  for (unsigned i=0; i<sizeof(nodelist)/sizeof(NODE); i++)
+    for (unsigned j=0; j<g; j++)
       nodelist[i].moves[j] = node->moves[j];
 
   // Assign moves to child nodes.
-  i=0;
-  for (j=0; j<18; j++) {
+  unsigned i=0;
+  for (unsigned j=0; j<18; j++) {
     // Don't turn the same face twice.
     if (g == 0 || j/3 != node->moves[g-1]/3) {
       (*moves[j])(node, nodelist+i);
@@ -87,7 +86,7 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
   }
 
   // Perform search on each child node.
-  for (i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
+  for (unsigned i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
 
     unsigned length = search(nodelist+i, g+1, threshold);
     if (length == FOUND) {
@@ -124,7 +123,8 @@ void get_scramble(void) {
   char scramble[256];
   NODE states[32];  // Can enter 32 moves.
   states[0] = solved;
-  fgets(scramble, 256, stdin);
+  if (fgets(scramble, 256, stdin) == NULL)
+    exit(0);
 
   // Tokenize user input and perform moves.
   char* token = strtok(scramble, " \n()[]\t{}");

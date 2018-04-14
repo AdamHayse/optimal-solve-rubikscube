@@ -51,6 +51,7 @@ static uint8_t comb[NUM_EDGES];
 static uint8_t temp[NUM_EDGES];
 
 static unsigned depth;
+static uint64_t hvalues[20];
 
 static void breadth_first_search(void);
 
@@ -58,7 +59,7 @@ int main(void) {
 
   // Set first entry to 0 and all other states to 0xFF.
   database[0] = 0x0F;
-  for (int i=1; i<E_DB_SIZE; i++)
+  for (uint64_t i=1; i<E_DB_SIZE; i++)
     database[i] = 0xFF;
 
   // Put all turn functions in a static array of functions called moves.
@@ -67,19 +68,24 @@ int main(void) {
   // Show progress tracker.
   update_percent();
 
-  // Do BFS by expanding only nodes of a given depth on each pass.
-  // Max number of moves to solve any state is 10.
+  // Do BFS by expanding only nodes of a given depth on each pass until database is full.
   depth = 0;
-  while (depth<10) {
-    for (int i=0; i<E_DB_SIZE; i++) {
+  int done=0;
+  while (!done) {
+    done = 1;
+    for (uint64_t i=0; i<E_DB_SIZE; i++) {
 
       if (database[i]>>4 == depth) {
         FIND_COMB(i*2, comb);
         breadth_first_search();
+        hvalues[depth]++;
+        done = 0;
       }
       if ((database[i]&0x0F) == depth) {
         FIND_COMB(i*2+1, comb);
         breadth_first_search();
+        hvalues[depth]++;
+        done = 0;
       }
     }
     depth++;
@@ -101,11 +107,8 @@ int main(void) {
   }
   printf("\rDatabase generation 100%%\nDone.\n");
 
-  int flag = 0;
-  for (int i=0; i<E_DB_SIZE; i++)
-    if (database[i] == 0xFF)
-      flag = 1;
-  printf("Flag: %u\n", flag);
+  for (unsigned i=0; i<depth-1; i++)
+    printf("%2u move to solve:  %lu\n", i, hvalues[i]);
 }
 
 void breadth_first_search(void) {
@@ -115,7 +118,8 @@ void breadth_first_search(void) {
   for (int i=0; i<18; i++) {
     // If turn affects edges cubes that we care about.
     if ((*movesE[i])(comb, temp)) {
- /*     for(int i=0; i<12; i++)
+ /*     printf("%2u ", i);
+      for(int i=0; i<12; i++)
         printf("%u, ", comb[i]);
       putchar('\t');
       for(int i=0; i<12; i++)
@@ -125,16 +129,15 @@ void breadth_first_search(void) {
 
       // If new combination hasn't been seen, add value of depth+1 to database.
       index = GET_INDEX(temp);
-     // printf("%u\n", index);
       add = index / 2;
       pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
       if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
 
         // Add depth+1 to database.
         if (pos)
-          database[add] = database[add] & (depth+1 | 0xF0);
+          database[add] = database[add] & ((depth+1) | 0xF0);
         else
-          database[add] = database[add] & ((depth+1 << 4) | 0x0F);
+          database[add] = database[add] & (((depth+1) << 4) | 0x0F);
 
         // Increase fill amount.
         fill_amount++;

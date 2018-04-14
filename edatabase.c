@@ -33,45 +33,44 @@ uint8_t E2_path_length(uint8_t *comb, uint8_t *database) {
 
 // Get index of stored combination.
 uint64_t E1_get_index(uint8_t *comb) {
-  uint64_t i, add = 0;
+  uint64_t add = 0;
 
   // Calculate which permutation number.
-  for (i=0; i<TRACKED_EDGES; i++) {
-    add += E1_get_loc(comb, i) * (fact[NUM_EDGES-i-1]/fact[NUM_EDGES-TRACKED_EDGES]); 
+  for (int i=0; i<TRACKED_EDGES; i++) {
+    add += E1_get_loc(comb, i) * (fact[NUM_EDGES-i-1]/fact[NUM_EDGES-TRACKED_EDGES]);
   }
 
   // Scale for permutation offset.
   add *= two_to_the[TRACKED_EDGES];  // power(NUM_EFACES, TRACKED_EDGES) 
 
   // Calculate which orientation number for orientation offset.
-  int j=0;
-  for (i=0; i<TRACKED_EDGES; i++)
-    for (j=0; j<NUM_EDGES; j++)
-      if (comb[j]/2 == i)
+  for (int i=0; i<TRACKED_EDGES; i++)
+    for (int j=0; j<NUM_EDGES; j++)
+      if (comb[j]/2 == i) {
         add += comb[j] % NUM_EFACES * two_to_the[i];
+        break;
+      }
 
   return add;
 }
 
 uint64_t E2_get_index(uint8_t *comb) {
-  uint64_t i, add = 0;
+  uint64_t add = 0;
 
   // Calculate which permutation number.
-  for (i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
+  for (int i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
     add += E2_get_loc(comb, i) * (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
 
   // Scale for permutation offset.
   add *= two_to_the[TRACKED_EDGES];  // power(NUM_EFACES, TRACKED_EDGES) 
 
   // Calculate which orientation number for orientation offset.
-  for (i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
-      add += comb[i] % NUM_EFACES * two_to_the[i-(NUM_EDGES-TRACKED_EDGES)];
-
-  int j=0;
-  for (i=NUM_EDGES-TRACKED_EDGES; i<TRACKED_EDGES; i++)
-    for (j=NUM_EDGES-TRACKED_EDGES; j<NUM_EDGES+NUM_EDGES-TRACKED_EDGES; j++)
-      if (comb[j%NUM_EDGES]/2 == i)
+  for (int i=0; i<TRACKED_EDGES; i++)
+    for (int j=0; j<NUM_EDGES; j++)
+      if (comb[j]/2 == i+NUM_EDGES-TRACKED_EDGES) {
         add += comb[j] % NUM_EFACES * two_to_the[i];
+        break;
+      }
 
   return add;
 }
@@ -107,33 +106,38 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
 
  // Get location of edge among remaining edges.
 unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
-  unsigned i, loc=0;
+  unsigned loc=0;
 
-  for (i=0; i<NUM_EDGES; i++) {
+  for (int i=0; i<NUM_EDGES; i++) {
     // Increment if piece is larger than tested edge.
-    if (comb[i]/2 > edge)
+    if (comb[i]/NUM_EFACES > edge)
       loc++;
-    if (comb[i]/2 == edge)
+    if (comb[i]/NUM_EFACES == edge)
       return loc;
   }
+  printf("There was a problem in E1_get_loc\n");
+  exit(0);
 }
 
 unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
-  unsigned i, loc=0;
+  unsigned loc=0;
 
-  for (i=(NUM_EDGES-TRACKED_EDGES); i<NUM_EDGES+(NUM_EDGES-TRACKED_EDGES); i++) {
+  for (int i=(NUM_EDGES-TRACKED_EDGES); i<NUM_EDGES+(NUM_EDGES-TRACKED_EDGES); i++) {
     // Increment if piece is smaller than tested edge.
-    if ((comb[i%NUM_EDGES]/2-(NUM_EDGES-TRACKED_EDGES))%12 > (edge+TRACKED_EDGES)%NUM_EDGES)
+    if ((comb[i%NUM_EDGES]/NUM_EFACES-(NUM_EDGES-TRACKED_EDGES))%NUM_EDGES > (edge+TRACKED_EDGES)%NUM_EDGES)
       loc++;
-    if (comb[i%NUM_EDGES]/2 == edge)
+    if (comb[i%NUM_EDGES]/NUM_EFACES == edge)
       return loc;
   }
+  printf("There was a problem in E2_get_loc\n");
+  exit(0);
 }
 
 void E1_decode_index(uint64_t index, uint8_t *comb) {
   uint64_t temp = index/two_to_the[TRACKED_EDGES];
-  for (int i=0; i<NUM_EDGES; i++)
+  for (int i=0; i<NUM_EDGES; i++) {
     comb[i] = TRACKED_EDGES*2;
+  }
   unsigned long long state = 0xfedcba9876543210ULL;
   for (int i = 0; i < TRACKED_EDGES; i++) {
     int p4 = temp/(fact[11-i]/fact[NUM_EDGES-TRACKED_EDGES]) * 4;
@@ -145,14 +149,15 @@ void E1_decode_index(uint64_t index, uint8_t *comb) {
 }
 
 void E2_decode_index(uint64_t index, uint8_t *comb) {
-  unsigned temp = index/two_to_the[TRACKED_EDGES];
-  for (int i=0; i<NUM_EDGES; i++)
+  uint64_t temp = index/two_to_the[TRACKED_EDGES];
+  for (int i=0; i<NUM_EDGES; i++) {
     comb[i] = (NUM_EDGES-TRACKED_EDGES)*2-1;
+  }
   unsigned long long state = 0xfedcba9876543210ULL;
-  for (int i = NUM_EDGES-TRACKED_EDGES; i < TRACKED_EDGES; i++) {
-    int p4 = temp/(fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]) * 4;
+  for (int i = NUM_EDGES-TRACKED_EDGES; i < NUM_EDGES; i++) {
+    int p4 = ((temp/(fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]))+TRACKED_EDGES)%12 * 4 ;
     temp %= (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
-    comb[(state >> p4) & 15] = 2*i + ((index % two_to_the[TRACKED_EDGES] >> i) % 2);
+    comb[(state >> p4) & 15] = 2*i + (index >> (i-(NUM_EDGES-TRACKED_EDGES))) % 2;
     unsigned long long mask = ((unsigned long long)1 << p4) - 1;
     state = (state & mask) | ((state >> 4) & ~mask);
   }

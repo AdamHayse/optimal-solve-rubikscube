@@ -16,6 +16,9 @@
   #define GET_INDEX(COMB) E1_get_index(COMB)
   #define FIND_COMB(INDEX, COMB) E1_decode_index(INDEX, COMB)
   #define OP >
+  #ifndef TRACKED_EDGES
+    #define TRACKED_EDGES 6
+  #endif
   #if TRACKED_EDGES == 6
     #define TRACKED_NAME "6"
     #define BOUND 11
@@ -36,6 +39,9 @@
   #define GET_INDEX(COMB) E2_get_index(COMB)
   #define FIND_COMB(INDEX, COMB) E2_decode_index(INDEX, COMB)
   #define OP <
+  #ifndef TRACKED_EDGES
+    #define TRACKED_EDGES 6
+  #endif
   #if TRACKED_EDGES == 6
     #define TRACKED_NAME "6"
     #define BOUND 12

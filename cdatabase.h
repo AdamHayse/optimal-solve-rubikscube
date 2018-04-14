@@ -5,8 +5,8 @@
 
 #include <stdint.h>
 
-#define NUM_CORNERS  8U
-#define NUM_CFACES   3U
+#define NUM_CORNERS  8
+#define NUM_CFACES   3
 #define C_DB_SIZE 44089920
 
 // Retrieve stored path length from database.
