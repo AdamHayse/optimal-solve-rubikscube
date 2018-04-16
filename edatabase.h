@@ -30,7 +30,7 @@
   #elif TRACKED_EDGES == 8
     #define TRACKED_NAME "8"
     #define BOUND 15
-    #define E_DB_SIZE 25544675200ULL   // 12!/4! x 2^8 / 2
+    #define E_DB_SIZE 2554675200ULL   // 12!/4! x 2^8 / 2
   #else
     #error "TRACKED_EDGES must be 6, 7, or 8"
   #endif
@@ -53,7 +53,7 @@
   #elif TRACKED_EDGES == 8
     #define TRACKED_NAME "8"
     #define BOUND 8
-    #define E_DB_SIZE 25544675200ULL   // 12!/4! x 2^8 / 2
+    #define E_DB_SIZE 2554675200ULL   // 12!/4! x 2^8 / 2
   #else
     #error "TRACKED_EDGES must be 6, 7, or 8"
   #endif

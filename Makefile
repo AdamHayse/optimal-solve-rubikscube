@@ -43,8 +43,8 @@ generateEDB2_7: generateEDB.c moves.c edatabase.c mymath.c database.c
 generateEDB2_8: generateEDB.c moves.c edatabase.c mymath.c database.c
 	gcc -D HALF=2 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c -mcmodel=medium $(CFLAGS) -o $@
 
-generateCDB: newgenerateCDB.c moves.c cdatabase.c mymath.c database.c
-	gcc newgenerateCDB.c moves.c cdatabase.c mymath.c database.c $(CFLAGS) -o $@
+generateCDB: generateCDB.c moves.c cdatabase.c mymath.c database.c
+	gcc generateCDB.c moves.c cdatabase.c mymath.c database.c $(CFLAGS) -o $@
 
 testscrambles6: testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c
 	gcc -D TRACKED_EDGES=6 testscrambles.c testheuristic.c searchmoves.c cdatabase.c edatabase.c mymath.c database.c IDAstar.c $(CFLAGS) -o $@
