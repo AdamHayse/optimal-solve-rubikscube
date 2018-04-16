@@ -58,7 +58,7 @@ uint64_t E2_get_index(uint8_t *comb) {
   uint64_t add = 0;
 
   // Calculate which permutation number.
-  for (int i=NUM_EDGES-TRACKED_EDGES; i<12; i++)
+  for (int i=NUM_EDGES-TRACKED_EDGES; i<NUM_EDGES; i++)
     add += E2_get_loc(comb, i) * (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
 
   // Scale for permutation offset.
@@ -75,6 +75,69 @@ uint64_t E2_get_index(uint8_t *comb) {
   return add;
 }
 
+// Get location of edge among remaining edges.
+unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
+  unsigned loc=0;
+
+  for (int i=0; i<NUM_EDGES; i++) {
+    // Increment if piece is larger than tested edge.
+    if (comb[i]/NUM_EFACES > edge)
+      loc++;
+    if (comb[i]/NUM_EFACES == edge)
+      return loc;
+  }
+  printf("There was a problem in E1_get_loc\n");
+  exit(0);
+}
+
+// Get location of edge among remaining edges.
+unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
+  unsigned loc=0;
+
+  for (int i=(NUM_EDGES-TRACKED_EDGES); i<NUM_EDGES+(NUM_EDGES-TRACKED_EDGES); i++) {
+    // Increment if piece is smaller than tested edge.
+    if ((comb[i%NUM_EDGES]/NUM_EFACES-(NUM_EDGES-TRACKED_EDGES)+NUM_EDGES)%NUM_EDGES > (edge+TRACKED_EDGES)%NUM_EDGES)
+      loc++;
+    if (comb[i%NUM_EDGES]/NUM_EFACES == edge)
+      return loc;
+  }
+  printf("There was a problem in E2_get_loc\n");
+  exit(0);
+}
+
+// Transform an index of the database to a combination.
+void E1_decode_index(uint64_t index, uint8_t *comb) {
+  uint64_t temp = index/two_to_the[TRACKED_EDGES];  // Get permutation number
+  for (int i=0; i<NUM_EDGES; i++) {
+    comb[i] = TRACKED_EDGES*2;
+  }
+  unsigned long long state = 0xfedcba9876543210ULL;
+  for (int i = 0; i < TRACKED_EDGES; i++) {
+    int p4 = temp/(fact[11-i]/fact[NUM_EDGES-TRACKED_EDGES]) * 4;
+    temp %= (fact[11-i]/fact[NUM_EDGES-TRACKED_EDGES]);
+    comb[(state >> p4) & 15] = 2*i + ((index % two_to_the[TRACKED_EDGES] >> i) % 2);
+    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
+    state = (state & mask) | ((state >> 4) & ~mask);
+  }    
+}
+
+// Transform an index of the database to a combination.
+void E2_decode_index(uint64_t index, uint8_t *comb) {
+  uint64_t temp = index/two_to_the[TRACKED_EDGES];
+  for (int i=0; i<NUM_EDGES; i++) {
+    comb[i] = (NUM_EDGES-TRACKED_EDGES)*2-1;
+  }
+  unsigned long long state = 0xfedcba9876543210ULL;
+  for (int i = NUM_EDGES-TRACKED_EDGES; i < NUM_EDGES; i++) {
+    int p4 = temp/(fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]) * 4 ;
+    temp %= (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
+    comb[(((state>>p4)&15)+NUM_EDGES-TRACKED_EDGES)%NUM_EDGES] = 2*i+((index%two_to_the[TRACKED_EDGES]>>(i-(NUM_EDGES-TRACKED_EDGES)))%2);
+    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
+    state = (state & mask) | ((state >> 4) & ~mask);
+  }
+}
+
+// Load edge databases into arrays of size E_DB_SIZE pointed to by edb1 and edb2.
 void load_edbs(uint8_t *edb1, uint8_t *edb2) {
   int fd;
   if ((fd = open("pattern_databases/edges1_" TRACKED_NAME ".patdb", O_RDONLY)) == -1) {
@@ -101,64 +164,5 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
   if (close(fd) == -1) {
     perror("Problem closing edges2_" TRACKED_NAME ".patdb");
     exit(1);
-  }
-}
-
- // Get location of edge among remaining edges.
-unsigned E1_get_loc(uint8_t *comb, unsigned edge) {
-  unsigned loc=0;
-
-  for (int i=0; i<NUM_EDGES; i++) {
-    // Increment if piece is larger than tested edge.
-    if (comb[i]/NUM_EFACES > edge)
-      loc++;
-    if (comb[i]/NUM_EFACES == edge)
-      return loc;
-  }
-  printf("There was a problem in E1_get_loc\n");
-  exit(0);
-}
-
-unsigned E2_get_loc(uint8_t *comb, unsigned edge) {
-  unsigned loc=0;
-
-  for (int i=(NUM_EDGES-TRACKED_EDGES); i<NUM_EDGES+(NUM_EDGES-TRACKED_EDGES); i++) {
-    // Increment if piece is smaller than tested edge.
-    if ((comb[i%NUM_EDGES]/NUM_EFACES-(NUM_EDGES-TRACKED_EDGES))%NUM_EDGES > (edge+TRACKED_EDGES)%NUM_EDGES)
-      loc++;
-    if (comb[i%NUM_EDGES]/NUM_EFACES == edge)
-      return loc;
-  }
-  printf("There was a problem in E2_get_loc\n");
-  exit(0);
-}
-
-void E1_decode_index(uint64_t index, uint8_t *comb) {
-  uint64_t temp = index/two_to_the[TRACKED_EDGES];
-  for (int i=0; i<NUM_EDGES; i++) {
-    comb[i] = TRACKED_EDGES*2;
-  }
-  unsigned long long state = 0xfedcba9876543210ULL;
-  for (int i = 0; i < TRACKED_EDGES; i++) {
-    int p4 = temp/(fact[11-i]/fact[NUM_EDGES-TRACKED_EDGES]) * 4;
-    temp %= (fact[11-i]/fact[NUM_EDGES-TRACKED_EDGES]);
-    comb[(state >> p4) & 15] = 2*i + ((index % two_to_the[TRACKED_EDGES] >> i) % 2);
-    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
-    state = (state & mask) | ((state >> 4) & ~mask);
-  }    
-}
-
-void E2_decode_index(uint64_t index, uint8_t *comb) {
-  uint64_t temp = index/two_to_the[TRACKED_EDGES];
-  for (int i=0; i<NUM_EDGES; i++) {
-    comb[i] = (NUM_EDGES-TRACKED_EDGES)*2-1;
-  }
-  unsigned long long state = 0xfedcba9876543210ULL;
-  for (int i = NUM_EDGES-TRACKED_EDGES; i < NUM_EDGES; i++) {
-    int p4 = ((temp/(fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]))+TRACKED_EDGES)%12 * 4 ;
-    temp %= (fact[NUM_EDGES-i+(NUM_EDGES-TRACKED_EDGES-1)]/fact[NUM_EDGES-TRACKED_EDGES]);
-    comb[(state >> p4) & 15] = 2*i + (index >> (i-(NUM_EDGES-TRACKED_EDGES))) % 2;
-    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
-    state = (state & mask) | ((state >> 4) & ~mask);
   }
 }

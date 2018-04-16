@@ -31,68 +31,57 @@
  *
  */
 
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "moves.h"
 #include "cdatabase.h"
 
 static uint8_t database[C_DB_SIZE];
-static uint8_t queue[C_DB_SIZE*2][NUM_CORNERS];
-static unsigned head;
-static unsigned queuesize;
+static uint8_t comb[NUM_CORNERS];
+static uint8_t temp[NUM_CORNERS];
 static unsigned depth;
+static unsigned hvalues[20];
 
 static void breadth_first_search(void);
 
 int main(void) {
 
-// Set solved state entry to 0 and all other states to 0xFF.
-  for (int i=0; i<C_DB_SIZE; i++)
+  // Set first entry to 0 and all other states to 0xFF.
+  database[0] = 0x0F;
+  for (uint64_t i=1; i<C_DB_SIZE; i++)
     database[i] = 0xFF;
-  database[44088826] = 0xF0;
 
-  // Add first combination to the queue.
-  for (uint8_t i=0; i<NUM_CORNERS; i++)
-    queue[0][i] = NUM_CFACES*i;
-
-  // Add 0xFF to signal increase in depth.
-  queue[1][0] = 0xFF;
-
-  // Finalize queue setup.
-  queuesize = 2;
-  depth = 1;
-  head = 0;
-
-  // Put all turn functions in an array of functions called moves.
+  // Put all turn functions in a static array of functions called moves.
   initialize_turns();
 
   // Show progress tracker.
   update_percent();
 
-  // Continue BFS until only element in queue is 0xFF.
-  while (1) {
+  // Do BFS by expanding only nodes of a given depth on each pass until database is full.
+  depth = 0;
+  int done=0;
+  while (!done) {
+    done = 1;
+    for (unsigned i=0; i<C_DB_SIZE; i++) {
 
-    // Check to see if there is a change in depth.
-    if (queue[head][0] == 0xFF) {
-      if (queuesize == 1)
-        break;
-
-      // Increment depth.
-      depth++;
-
-      // Place another 0xFF at end of queue to signal change in depth.
-      queue[(head+queuesize)%(C_DB_SIZE*2)][0] = 0xFF;
-
-      // Move head of queue past the depth change signal.
-      head = (head+1)%(C_DB_SIZE*2);
+      if (database[i]>>4 == depth) {
+        C_decode_index(i*2, comb);
+        breadth_first_search();
+        hvalues[depth]++;
+        done = 0;
+      }
+      if ((database[i]&0x0F) == depth) {
+        C_decode_index(i*2+1, comb);
+        breadth_first_search();
+        hvalues[depth]++;
+        done = 0;
+      }
     }
-    else
-      breadth_first_search();
+    depth++;
   }
 
   // Write database to a file.
@@ -110,32 +99,32 @@ int main(void) {
     exit(1);
   }
   printf("\rDatabase generation 100%%\nDone.\n");
+
+  // Print table of heuristic values.
+  for (unsigned i=0; i<depth-1; i++)
+    printf("%2u move to solve:  %lu\n", i, hvalues[i]);
 }
 
-static void breadth_first_search(void) {
+void breadth_first_search(void) {
 
   // Add NEW combinations to the end of the queue
-  int i;
   unsigned index, add, pos;
-  for (i=0; i<18; i++) {
+  for (int i=0; i<18; i++) {
 
-    // Put candidate combination at end of queue.
-    (*movesC[i])(queue[head], queue[(head+queuesize)%(C_DB_SIZE*2)]);
+    // Perform turn.
+    (*movesC[i])(comb, temp);
 
-    // If combination hasn't been seen, keep it in the queue.
-    index = C_get_index(queue[(head+queuesize)%(C_DB_SIZE*2)]);
+    // If new combination hasn't been seen, add value of depth+1 to database.
+    index = C_get_index(temp);
     add = index / 2;
-    pos = index % 2;
+    pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
     if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
 
-      // Keep combination in the queue.
-      queuesize++;
-
-      // Add depth to database.
+      // Add depth+1 to database.
       if (pos)
-        database[add] = database[add] & (depth | 0xF0);
+        database[add] = database[add] & ((depth+1) | 0xF0);
       else
-        database[add] = database[add] & ((depth << 4) | 0xF);
+        database[add] = database[add] & (((depth+1) << 4) | 0x0F);
 
       // Increase fill amount.
       fill_amount++;
@@ -143,8 +132,4 @@ static void breadth_first_search(void) {
         update_percent();
     }
   }
-
-  // Manage queue.
-  head = (head+1)%(C_DB_SIZE*2);  // Circular array.
-  queuesize--;
 }

@@ -72,11 +72,15 @@ uint8_t E2_path_length(uint8_t *comb, uint8_t *data);
 uint64_t E1_get_index(uint8_t *comb);
 uint64_t E2_get_index(uint8_t *comb);
 
-void load_edbs(uint8_t *edb1, uint8_t *edb2);
+// Get location of edge among remaining edges.
 unsigned E1_get_loc(uint8_t *comb, unsigned edge);
 unsigned E2_get_loc(uint8_t *comb, unsigned edge);
 
+// Transform an index of the database to a combination.
 void E1_decode_index(uint64_t index, uint8_t *comb);
 void E2_decode_index(uint64_t index, uint8_t *comb);
+
+// Load edge databases into arrays of size E_DB_SIZE pointed to by edb1 and edb2.
+void load_edbs(uint8_t *edb1, uint8_t *edb2);
 
 #endif

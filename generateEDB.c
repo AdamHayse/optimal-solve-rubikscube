@@ -35,8 +35,6 @@
  *
  */
 
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -49,7 +47,6 @@
 static uint8_t database[E_DB_SIZE];
 static uint8_t comb[NUM_EDGES];
 static uint8_t temp[NUM_EDGES];
-
 static unsigned depth;
 static uint64_t hvalues[20];
 
@@ -107,6 +104,7 @@ int main(void) {
   }
   printf("\rDatabase generation 100%%\nDone.\n");
 
+  // Print table of heuristic values.
   for (unsigned i=0; i<depth-1; i++)
     printf("%2u move to solve:  %lu\n", i, hvalues[i]);
 }
@@ -116,16 +114,9 @@ void breadth_first_search(void) {
   // Add NEW combinations to the end of the queue
   uint64_t index, add, pos;
   for (int i=0; i<18; i++) {
+
     // If turn affects edges cubes that we care about.
     if ((*movesE[i])(comb, temp)) {
- /*     printf("%2u ", i);
-      for(int i=0; i<12; i++)
-        printf("%u, ", comb[i]);
-      putchar('\t');
-      for(int i=0; i<12; i++)
-        printf("%u, ", temp[i]);
-      putchar('\n'); */
-
 
       // If new combination hasn't been seen, add value of depth+1 to database.
       index = GET_INDEX(temp);

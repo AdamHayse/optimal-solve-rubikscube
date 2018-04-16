@@ -28,9 +28,9 @@ unsigned C_get_index(uint8_t *comb) {
 
   // Calculate which permutation number.
   unsigned long long state = 0xFEDCBA9876543210;
-  for (i=7; i>0; i--) {
+  for (i=0; i<7; i++) {
     int p4 = comb[i]/3 * 4;
-    add += fact[i] * (state >> p4 & 15);
+    add += fact[7-i] * (state >> p4 & 15);
     state -= 0x1111111111111110ULL << p4;
   }
 
@@ -38,12 +38,26 @@ unsigned C_get_index(uint8_t *comb) {
   add *= 2187;  // power(NUM_CFACES, NUM_CORNERS-1)
 
   // Calculate which orientation number for orientation offset.
-  for (i=0; i<7; i++)
-    add += comb[i] % NUM_CFACES * three_to_the[i];
+  for (int i=0; i<7; i++)
+        add += comb[i] % NUM_CFACES * three_to_the[i];
 
   return add;
 }
 
+// Transform an index of the database to a combination.
+void C_decode_index(unsigned index, uint8_t *comb) {
+  unsigned temp = index/three_to_the[7];
+  unsigned long long state = 0xfedcba9876543210ULL;
+  for (int i=0; i<7; i++) {
+    int p4 = temp/fact[7-i] * 4;
+    temp %= fact[7-i];
+    comb[i] = 3*((state >> p4) & 15) + (index % three_to_the[7] / three_to_the[i]) % 3;
+    unsigned long long mask = ((unsigned long long)1 << p4) - 1;
+    state = (state & mask) | ((state >> 4) & ~mask);
+  } 
+}
+
+// Load corners database into array of size C_DB_SIZE pointed to by cdb.
 void load_cdb(uint8_t *cdb) {
   int fd;
   if ((fd = open("pattern_databases/corners.patdb", O_RDONLY)) == -1) {
@@ -59,4 +73,3 @@ void load_cdb(uint8_t *cdb) {
     exit(1);
   }
 }
-
