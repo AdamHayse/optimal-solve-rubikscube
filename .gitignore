@@ -19,4 +19,13 @@ testbijective8
 testscrambles6
 testscrambles7
 testscrambles8
-
+.vscode/
+generateEDB1_1
+generateEDB1_2
+generateEDB1_3
+generateEDB1_4
+generateEDB1_5
+pattern_databases/edges1_1.patdb
+pattern_databases/edges1_3.patdb
+pattern_databases/edges1_4.patdb
+pattern_databases/edges1_5.patdb
