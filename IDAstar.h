@@ -31,8 +31,8 @@ void get_scramble(void);
 // Print a move.
 void printmove(uint8_t move);
 
-extern uint8_t cdatabase[C_DB_SIZE];
-extern uint8_t e1database[E_DB_SIZE];
-extern uint8_t e2database[E_DB_SIZE];
+extern uint8_t *cdatabase;
+extern uint8_t *e1database;
+extern uint8_t *e2database;
 
 #endif

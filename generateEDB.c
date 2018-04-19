@@ -41,18 +41,26 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include "moves.h"
 #include "edatabase.h"
 
-static uint8_t database[E_DB_SIZE];
+static uint8_t *database;
 static uint8_t comb[NUM_EDGES];
 static uint8_t temp[NUM_EDGES];
 static unsigned depth;
 static uint64_t hvalues[20];
 
 static void breadth_first_search(void);
+static void write_DB(void);
 
 int main(void) {
+
+  // Get memory for the database.
+  if ((database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
+    perror("Not enough memory for database.\n");
+    exit(1);
+  }
 
   // Set first entry to 0 and all other states to 0xFF.
   database[0] = 0x0F;
@@ -89,19 +97,8 @@ int main(void) {
   }
 
   // Write database to a file.
-  int fd;
-  if ((fd=creat("pattern_databases/edges"FILENAME"_"TRACKED_NAME".patdb", 0644)) == -1) {
-    perror("\nUnable to create file\n");
-    exit(1);
-  }
-  if (write(fd, database, E_DB_SIZE) == -1) {
-    perror("\nThere was a problem writing to the file.\n");
-    exit(1);
-  }
-  if (close(fd) == -1) {
-    perror("\nThere was a problem closing the file.\n");
-    exit(1);
-  }
+  write_DB();
+
   printf("\rDatabase generation 100%%\nDone.\n");
 
   // Print table of heuristic values.
@@ -132,9 +129,35 @@ void breadth_first_search(void) {
 
         // Increase fill amount.
         fill_amount++;
-        if ((double)fill_amount / (E_DB_SIZE * 2) > fill_percent + .01)
+        if ((double)fill_amount / (E_DB_SIZE * 2) >= fill_percent + .01)
           update_percent();
       }
     }
+  }
+}
+
+void write_DB(void) {
+
+  // Write database to a file.
+  int fd;
+  if ((fd=creat("pattern_databases/edges"FILENAME"_"TRACKED_NAME".patdb", 0644)) == -1) {
+    perror("\nUnable to create file\n");
+    exit(1);
+  }
+
+  int i=0;
+  int64_t amount = 0, remain = E_DB_SIZE;
+  while ((amount=write(fd, database + E_DB_SIZE - remain, (remain>SSIZE_MAX) ? SSIZE_MAX : remain)) != remain) {
+    if (amount == -1) {
+      perror("Problem writing to file.\n");
+      exit(1);
+    }
+    remain -= amount;
+    i++;
+  }
+
+  if (close(fd) == -1) {
+    perror("\nThere was a problem closing the file.\n");
+    exit(1);
   }
 }

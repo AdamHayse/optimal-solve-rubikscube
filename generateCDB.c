@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 #include "moves.h"
 #include "cdatabase.h"
 
@@ -116,9 +117,13 @@ void breadth_first_search(void) {
 
     // If new combination hasn't been seen, add value of depth+1 to database.
     index = C_get_index(temp);
+    if (index/2 > C_DB_SIZE)
+      exit(0);
     add = index / 2;
     pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
     if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
+
+   // printf("%u %u %u\n", i, depth+1, index);
 
       // Add depth+1 to database.
       if (pos)

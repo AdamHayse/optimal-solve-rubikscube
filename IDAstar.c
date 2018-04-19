@@ -9,15 +9,30 @@
 #include "edatabase.h"
 #include "IDAstar.h"
 
-uint8_t cdatabase[C_DB_SIZE];
-uint8_t e1database[E_DB_SIZE];
-uint8_t e2database[E_DB_SIZE];
+uint8_t *cdatabase;
+uint8_t *e1database;
+uint8_t *e2database;
 
 static NODE solved;
 static NODE scrambled;
+static uint64_t explored = 0;
 
 // IDA* driver
 void IDAstar(void) {
+
+  // Get memory for the database.
+  if ((cdatabase=(uint8_t*)malloc(C_DB_SIZE)) == NULL) {
+    perror("Not enough memory for database.\n");
+    exit(1);
+  }
+  if ((e1database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
+    perror("Not enough memory for database.\n");
+    exit(1);
+  }
+  if ((e2database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
+    perror("Not enough memory for database.\n");
+    exit(1);
+  }
 
   // Load pattern databases and initialize turns.
   load_cdb(cdatabase);
@@ -28,7 +43,7 @@ void IDAstar(void) {
   while (1) {
     // Get solved and scrambled states.
     get_scramble();
-
+    explored = 0;
     // Get initial estimate to solve.
     unsigned threshold = scrambled.h;
     int length;
@@ -51,6 +66,7 @@ void IDAstar(void) {
       printmove(solved.moves[i]);
 
     putchar('\n');
+    printf("Explored nodes: %lu\n", explored);
   }
 }
 
@@ -87,7 +103,7 @@ unsigned search(NODE *node, unsigned g, unsigned threshold) {
 
   // Perform search on each child node.
   for (unsigned i=0; i<sizeof(nodelist)/sizeof(NODE); i++) {
-
+    explored++;
     unsigned length = search(nodelist+i, g+1, threshold);
     if (length == FOUND) {
         solved.moves[g] = nodelist[i].moves[g];  // Populate static solved node with the moves.

@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdint.h>
+#include <limits.h>
 #include "edatabase.h"
 #include "mymath.h"
 
@@ -144,10 +146,17 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
     perror("Could not open edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
-  if (read(fd, edb1, E_DB_SIZE) == -1) {
-    perror("Problem reading edges1_" TRACKED_NAME ".patdb");
-    exit(1);
+
+  int i=0;
+  int64_t amount = 0;
+  while ((amount=read(fd, edb1 + amount * i, SSIZE_MAX)) != 0) {
+    if (amount == -1) {
+      perror("Problem reading edges1_" TRACKED_NAME ".patdb");
+      exit(1);
+    }
+    i++;
   }
+
   if (close(fd) == -1) {
     perror("Problem closing edges1_" TRACKED_NAME ".patdb");
     exit(1);
@@ -157,9 +166,14 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
     perror("Could not open edges2_" TRACKED_NAME ".patdb");
     exit(1);
   }
-  if (read(fd, edb2, E_DB_SIZE) == -1) {
-    perror("Problem reading edges2_" TRACKED_NAME ".patdb");
-    exit(1);
+  i=0;
+  amount = 0;
+  while ((amount=read(fd, edb2 + amount * i, SSIZE_MAX)) != 0) {
+    if (amount == -1) {
+      perror("Problem reading edges2_" TRACKED_NAME ".patdb");
+      exit(1);
+    }
+    i++;
   }
   if (close(fd) == -1) {
     perror("Problem closing edges2_" TRACKED_NAME ".patdb");

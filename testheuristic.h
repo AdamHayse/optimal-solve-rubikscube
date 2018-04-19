@@ -19,5 +19,6 @@ void display_scramble(uint8_t *corners, uint8_t *edges);
 // Return 0 if bijective, difference otherwise.
 int64_t E1_bijective(uint8_t *edges);
 int64_t E2_bijective(uint8_t *edges);
+int64_t C_bijective(uint8_t *corners);
 
 #endif

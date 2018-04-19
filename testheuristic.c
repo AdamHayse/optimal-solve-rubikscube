@@ -20,9 +20,9 @@
 #include "IDAstar.h"
 #include "testheuristic.h"
 
-uint8_t cdatabase[C_DB_SIZE];
-uint8_t e1database[E_DB_SIZE];
-uint8_t e2database[E_DB_SIZE];
+uint8_t *cdatabase;
+uint8_t *e1database;
+uint8_t *e2database;
 static NODE solved;
 static NODE scrambled;
 
@@ -136,6 +136,19 @@ void test_heuristic(void) {
       E2_decode_index(index, temp);
       // Print decode.
       for (unsigned i=0; i<NUM_EDGES; i++)
+        printf("%2u, ", temp[i]);
+      putchar('\n');
+    }
+    if ((difference=C_bijective(scrambled.corners)) == 0)
+      printf("C Encode/decode function is bijective for scramble.\n");
+    else {
+      printf("***C NOT BIJECTIVE***\n  difference = %ld\n", difference);
+      // Get decode.
+      int64_t index = C_get_index(scrambled.corners);
+      uint8_t temp[NUM_CORNERS];
+      C_decode_index(index, temp);
+      // Print decode.
+      for (unsigned i=0; i<NUM_CORNERS; i++)
         printf("%2u, ", temp[i]);
       putchar('\n');
     }
@@ -319,4 +332,23 @@ int64_t E2_bijective(uint8_t *edges) {
 
     // Encode again and return difference.
     return index - E2_get_index(temp);
+}
+
+int64_t C_bijective(uint8_t *corners) {
+  unsigned index = C_get_index(corners);
+  printf("%u\n", index);
+  uint8_t temp[NUM_CORNERS];
+  C_decode_index(index, temp);
+
+  for (int i=0; i<8; i++)
+    printf("%u, ", corners[i]);
+
+  putchar('\n');
+
+  for (int i=0; i<8; i++)
+    printf("%u, ", temp[i]);
+
+  putchar('\n');
+
+  return index - C_get_index(temp);
 }
