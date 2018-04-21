@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "database.h"
 
-unsigned fill_amount = 0;
+atomic_ullong fill_amount = 0;
 double fill_percent = -0.01;
 
 void update_percent(void) {
