@@ -46,13 +46,17 @@
 #include "moves.h"
 #include "edatabase.h"
 
+#ifndef NUM_THREADS
+  #define NUM_THREADS 1
+#endif
+
 static uint8_t *database;
-static uint8_t comb[NUM_EDGES];
-static uint8_t temp[NUM_EDGES];
+static uint8_t comb[NUM_THREADS][NUM_EDGES];
+static uint8_t temp[NUM_THREADS][NUM_EDGES];
 static unsigned depth;
 static uint64_t hvalues[20];
 
-static void breadth_first_search(void);
+static void breadth_first_search(int offset);
 static void write_DB(void);
 
 int main(void) {
@@ -77,25 +81,24 @@ int main(void) {
   // Do BFS by expanding only nodes of a given depth on each pass until database is full.
   depth = 0;
   int done=0;
-  #if TRACKED_EDGES > 5
-  void *multiBFS(void *dboffset);
+  #if NUM_THREADS > 1
+  void *multiBFS(void *offset);
   #endif
   while (!done) {
 
-    #if TRACKED_EDGES > 5
-    pthread_t t[8];
-    int offset[8];
-    for (int i=0; i<8; i++) {
+    #if NUM_THREADS > 1
+    pthread_t t[NUM_THREADS];
+    int offset[NUM_THREADS];
+    for (int i=0; i<NUM_THREADS; i++) {
       offset[i] = i;
       pthread_create(&t[i], NULL, multiBFS, (void*)(offset+i));
-
     }
-    void* retval[8];
-    for (int i=0; i<8; i++)
+    void* retval[NUM_THREADS];
+    for (int i=0; i<NUM_THREADS; i++)
       pthread_join(t[i], &retval[i]);
-    for (int i=0; i<8; i++) {
-      hvalues[depth] += (uint64_t)retval[i];
-      free(retval[i]);
+    for (int i=0; i<NUM_THREADS; i++) {
+      hvalues[depth] += *((uint64_t*)retval[i]);
+     // free(retval[i]);
     }
     if (hvalues[depth] == 0)
       done = 1;
@@ -105,14 +108,14 @@ int main(void) {
     for (uint64_t i=0; i<E_DB_SIZE; i++) {
 
       if (database[i]>>4 == depth) {
-        FIND_COMB(i*2, comb);
-        breadth_first_search();
+        FIND_COMB(i*2, comb[0]);
+        breadth_first_search(0);
         hvalues[depth]++;
         done = 0;
       }
       if ((database[i]&0x0F) == depth) {
-        FIND_COMB(i*2+1, comb);
-        breadth_first_search();
+        FIND_COMB(i*2+1, comb[0]);
+        breadth_first_search(0);
         hvalues[depth]++;
         done = 0;
       }
@@ -131,38 +134,38 @@ int main(void) {
     printf("%2u move to solve:  %lu\n", i, hvalues[i]);
 }
 
-#if TRACKED_EDGES > 5
+#if NUM_THREADS > 1
 void *multiBFS(void *offset) {
   uint64_t *total = (uint64_t*)malloc(sizeof(uint64_t));
   uint64_t dboffset = *((int*)offset);
   *total = 0;
-  for (uint64_t i=dboffset*E_DB_SIZE/8; i<(dboffset+1)*E_DB_SIZE/8; i++) {
+  for (uint64_t i=E_DB_SIZE/NUM_THREADS*dboffset; i<E_DB_SIZE/NUM_THREADS*(dboffset+1); i++) {
     if (database[i]>>4 == depth) {
-      FIND_COMB(i*2, comb);
-      breadth_first_search();
-      total++;
+      FIND_COMB(i*2, comb[dboffset]);
+      breadth_first_search(dboffset);
+      *total += 1;
     }
     if ((database[i]&0x0F) == depth) {
-      FIND_COMB(i*2+1, comb);
-      breadth_first_search();
-      total++;
+      FIND_COMB(i*2+1, comb[dboffset]);
+      breadth_first_search(dboffset);
+      *total += 1;
     }
   }
   pthread_exit(total);
 }
 #endif
 
-void breadth_first_search(void) {
+void breadth_first_search(int offset) {
 
   // Add NEW combinations to the end of the queue
   uint64_t index, add, pos;
   for (int i=0; i<18; i++) {
 
     // If turn affects edges cubes that we care about.
-    if ((*movesE[i])(comb, temp)) {
+    if ((*movesE[i])(comb[offset], temp[offset])) {
 
       // If new combination hasn't been seen, add value of depth+1 to database.
-      index = GET_INDEX(temp);
+      index = GET_INDEX(temp[offset]);
       add = index / 2;
       pos = index % 2;  // 0 = left 4 bits  1 = right 4 bits
       if ((pos ? database[add] & 0x0F : database[add] >> 4) == 15) {
