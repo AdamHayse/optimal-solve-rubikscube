@@ -42,6 +42,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <limits.h>
+#include <pthread.h>
 #include "moves.h"
 #include "edatabase.h"
 
@@ -76,7 +77,26 @@ int main(void) {
   // Do BFS by expanding only nodes of a given depth on each pass until database is full.
   depth = 0;
   int done=0;
+  #if TRACKED_EDGES > 5
+  void *multiBFS(void *dboffset);
+  #endif
   while (!done) {
+
+    #if TRACKED_EDGES > 5
+    pthread_t t[8];
+    for (int i=0; i<8; i++)
+      pthread_create(&t[i], NULL, multiBFS, (void*)(E_DB_SIZE/8*i));
+    void* retval[8];
+    for (int i=0; i<8; i++)
+      pthread_join(t[i], &retval[i]);
+    for (int i=0; i<8; i++) {
+      hvalues[depth] += (uint64_t)retval[i];
+      free(retval[i]);
+    }
+    if (hvalues[depth] == 0)
+      done = 1;
+    depth++;
+    #else
     done = 1;
     for (uint64_t i=0; i<E_DB_SIZE; i++) {
 
@@ -94,6 +114,7 @@ int main(void) {
       }
     }
     depth++;
+    #endif
   }
 
   // Write database to a file.
@@ -105,6 +126,26 @@ int main(void) {
   for (unsigned i=0; i<depth-1; i++)
     printf("%2u move to solve:  %lu\n", i, hvalues[i]);
 }
+
+#if TRACKED_EDGES > 5
+void *multiBFS(void *dboffset) {
+  uint64_t *total = (uint64_t*)malloc(sizeof(uint64_t));
+  *total = 0;
+  for (uint64_t i=(uint64_t)dboffset; i<(uint64_t)dboffset+E_DB_SIZE/8; i++) {
+    if (database[i]>>4 == depth) {
+      FIND_COMB(i*2, comb);
+      breadth_first_search();
+      total++;
+    }
+    if ((database[i]&0x0F) == depth) {
+      FIND_COMB(i*2+1, comb);
+      breadth_first_search();
+      total++;
+    }
+  }
+  pthread_exit(total);
+}
+#endif
 
 void breadth_first_search(void) {
 

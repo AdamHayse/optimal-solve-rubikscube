@@ -206,11 +206,18 @@ void C_turn_Dprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_U(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[0] = comb[3]) OP BOUND) & 
       ((next[1] = comb[0]) OP BOUND) &
       ((next[2] = comb[1]) OP BOUND) &
       ((next[3] = comb[2]) OP BOUND))
     return 0;
+  #else
+  next[0] = comb[3];
+  next[1] = comb[0];
+  next[2] = comb[1];
+  next[3] = comb[2];
+  #endif
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -223,11 +230,18 @@ unsigned E_turn_U(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_U2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[0] = comb[2]) OP BOUND) & 
       ((next[1] = comb[3]) OP BOUND) &
       ((next[2] = comb[0]) OP BOUND) &
       ((next[3] = comb[1]) OP BOUND))
     return 0;
+  #else
+  next[0] = comb[2];
+  next[1] = comb[3];
+  next[2] = comb[0];
+  next[3] = comb[1];
+  #endif
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -240,11 +254,18 @@ unsigned E_turn_U2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Uprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[0] = comb[1]) OP BOUND) & 
       ((next[1] = comb[2]) OP BOUND) &
       ((next[2] = comb[3]) OP BOUND) &
       ((next[3] = comb[0]) OP BOUND))
     return 0;
+  #else
+  next[0] = comb[1];
+  next[1] = comb[2];
+  next[2] = comb[3];
+  next[3] = comb[0];
+  #endif
   next[4] = comb[4];
   next[5] = comb[5];
   next[6] = comb[6];
@@ -258,11 +279,18 @@ unsigned E_turn_Uprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_F(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[7] = comb[0]) OP BOUND) &
       ((next[8] = comb[7]) OP BOUND) &
       ((next[0] = comb[4]%2 ? comb[4]-1 : comb[4]+1) OP BOUND) &
       ((next[4] = comb[8]%2 ? comb[8]-1 : comb[8]+1) OP BOUND))
     return 0;
+  #else
+  next[7] = comb[0];
+  next[8] = comb[7];
+  next[0] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
+  next[4] = comb[8]%2 ? comb[8]-1 : comb[8]+1;
+  #endif
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -275,11 +303,18 @@ unsigned E_turn_F(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_F2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[0] = comb[8]) OP BOUND) &
       ((next[8] = comb[0]) OP BOUND) &
       ((next[4] = comb[7]%2 ? comb[7]-1 : comb[7]+1) OP BOUND) &
       ((next[7] = comb[4]%2 ? comb[4]-1 : comb[4]+1) OP BOUND))
     return 0;
+  #else
+  next[0] = comb[8];
+  next[8] = comb[0];
+  next[4] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
+  next[7] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
+  #endif
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -292,11 +327,18 @@ unsigned E_turn_F2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Fprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[0] = comb[7]) OP BOUND) &
       ((next[7] = comb[8]) OP BOUND) &
       ((next[4] = comb[0]%2 ? comb[0]-1 : comb[0]+1) OP BOUND) &
       ((next[8] = comb[4]%2 ? comb[4]-1 : comb[4]+1) OP BOUND))
     return 0;
+  #else
+  next[0] = comb[7];
+  next[7] = comb[8];
+  next[4] = comb[0]%2 ? comb[0]-1 : comb[0]+1;
+  next[8] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
+  #endif
   next[1] = comb[1];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -309,11 +351,18 @@ unsigned E_turn_Fprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_L(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[4] = comb[1]) OP BOUND) &
       ((next[9] = comb[4]) OP BOUND) &
       ((next[1] = comb[5]%2 ? comb[5]-1 : comb[5]+1) OP BOUND) &
       ((next[5] = comb[9]%2 ? comb[9]-1 : comb[9]+1) OP BOUND))
     return 0;
+  #else
+  next[4] = comb[1];
+  next[9] = comb[4];
+  next[1] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
+  next[5] = comb[9]%2 ? comb[9]-1 : comb[9]+1;
+  #endif
   next[0] = comb[0];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -326,11 +375,18 @@ unsigned E_turn_L(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_L2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[1] = comb[9]) OP BOUND) &
       ((next[9] = comb[1]) OP BOUND) &
       ((next[4] = comb[5]%2 ? comb[5]-1 : comb[5]+1) OP BOUND) &
       ((next[5] = comb[4]%2 ? comb[4]-1 : comb[4]+1) OP BOUND))
     return 0;
+  #else
+  next[1] = comb[9];
+  next[9] = comb[1];
+  next[4] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
+  next[5] = comb[4]%2 ? comb[4]-1 : comb[4]+1;
+  #endif
   next[0] = comb[0];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -343,11 +399,18 @@ unsigned E_turn_L2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Lprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[1] = comb[4]) OP BOUND) &
       ((next[4] = comb[9]) OP BOUND) &
       ((next[5] = comb[1]%2 ? comb[1]-1 : comb[1]+1) OP BOUND) &
       ((next[9] = comb[5]%2 ? comb[5]-1 : comb[5]+1) OP BOUND))
     return 0;
+  #else
+  next[1] = comb[4];
+  next[4] = comb[9];
+  next[5] = comb[1]%2 ? comb[1]-1 : comb[1]+1;
+  next[9] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
+  #endif
   next[0] = comb[0];
   next[2] = comb[2];
   next[3] = comb[3];
@@ -360,11 +423,18 @@ unsigned E_turn_Lprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_B(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[5] = comb[2]) OP BOUND) &
       ((next[10] = comb[5]) OP BOUND) &
       ((next[2] = comb[6]%2 ? comb[6]-1 : comb[6]+1) OP BOUND) &
       ((next[6] = comb[10]%2 ? comb[10]-1 : comb[10]+1) OP BOUND))
     return 0;
+  #else
+  next[5] = comb[2];
+  next[10] = comb[5];
+  next[2] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
+  next[6] = comb[10]%2 ? comb[10]-1 : comb[10]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[3] = comb[3];
@@ -377,11 +447,18 @@ unsigned E_turn_B(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_B2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[2] = comb[10]) OP BOUND) &
       ((next[10] = comb[2]) OP BOUND) &
       ((next[5] = comb[6]%2 ? comb[6]-1 : comb[6]+1) OP BOUND) &
       ((next[6] = comb[5]%2 ? comb[5]-1 : comb[5]+1) OP BOUND))
     return 0;
+  #else
+  next[2] = comb[10];
+  next[10] = comb[2];
+  next[5] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
+  next[6] = comb[5]%2 ? comb[5]-1 : comb[5]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[3] = comb[3];
@@ -394,11 +471,18 @@ unsigned E_turn_B2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Bprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[2] = comb[5]) OP BOUND) &
       ((next[5] = comb[10]) OP BOUND) &
       ((next[6] = comb[2]%2 ? comb[2]-1 : comb[2]+1) OP BOUND) &
       ((next[10] = comb[6]%2 ? comb[6]-1 : comb[6]+1) OP BOUND))
     return 0;
+  #else
+  next[2] = comb[5];
+  next[5] = comb[10];
+  next[6] = comb[2]%2 ? comb[2]-1 : comb[2]+1;
+  next[10] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[3] = comb[3];
@@ -411,11 +495,18 @@ unsigned E_turn_Bprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_R(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[6] = comb[3]) OP BOUND) &
       ((next[11] = comb[6]) OP BOUND) &
       ((next[3] = comb[7]%2 ? comb[7]-1 : comb[7]+1) OP BOUND) &
       ((next[7] = comb[11]%2 ? comb[11]-1 : comb[11]+1) OP BOUND))
     return 0;
+  #else
+  next[6] = comb[3];
+  next[11] = comb[6];
+  next[3] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
+  next[7] = comb[11]%2 ? comb[11]-1 : comb[11]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -428,11 +519,18 @@ unsigned E_turn_R(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_R2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[3] = comb[11]) OP BOUND) &
       ((next[11] = comb[3]) OP BOUND) &
       ((next[6] = comb[7]%2 ? comb[7]-1 : comb[7]+1) OP BOUND) &
       ((next[7] = comb[6]%2 ? comb[6]-1 : comb[6]+1) OP BOUND))
     return 0;
+  #else
+  next[3] = comb[11];
+  next[11] = comb[3];
+  next[6] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
+  next[7] = comb[6]%2 ? comb[6]-1 : comb[6]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -445,11 +543,18 @@ unsigned E_turn_R2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Rprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[3] = comb[6]) OP BOUND) &
       ((next[6] = comb[11]) OP BOUND) &
       ((next[7] = comb[3]%2 ? comb[3]-1 : comb[3]+1) OP BOUND) &
       ((next[11] = comb[7]%2 ? comb[7]-1 : comb[7]+1) OP BOUND))
     return 0;
+  #else
+  next[3] = comb[6];
+  next[6] = comb[11];
+  next[7] = comb[3]%2 ? comb[3]-1 : comb[3]+1;
+  next[11] = comb[7]%2 ? comb[7]-1 : comb[7]+1;
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -462,11 +567,18 @@ unsigned E_turn_Rprime(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_D(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[8] = comb[9]) OP BOUND) &
       ((next[9] = comb[10]) OP BOUND) &
       ((next[10] = comb[11]) OP BOUND) &
       ((next[11] = comb[8]) OP BOUND))
     return 0;
+  #else
+  next[8] = comb[9];
+  next[9] = comb[10];
+  next[10] = comb[11];
+  next[11] = comb[8];
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -479,11 +591,18 @@ unsigned E_turn_D(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_D2(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[8] = comb[10]) OP BOUND) &
       ((next[9] = comb[11]) OP BOUND) &
       ((next[10] = comb[8]) OP BOUND) &
       ((next[11] = comb[9]) OP BOUND))
     return 0;
+  #else
+  next[8] = comb[10];
+  next[9] = comb[11];
+  next[10] = comb[8];
+  next[11] = comb[9];
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];
@@ -496,11 +615,18 @@ unsigned E_turn_D2(uint8_t *comb, uint8_t *next) {
 }
 
 unsigned E_turn_Dprime(uint8_t *comb, uint8_t *next) {
+  #if TRACKED_EDGES < 9
   if (((next[8] = comb[11]) OP BOUND) &
       ((next[9] = comb[8]) OP BOUND) &
       ((next[10] = comb[9]) OP BOUND) &
       ((next[11] = comb[10]) OP BOUND))
     return 0;
+  #else
+  next[8] = comb[11];
+  next[9] = comb[8];
+  next[10] = comb[9];
+  next[11] = comb[10];
+  #endif
   next[0] = comb[0];
   next[1] = comb[1];
   next[2] = comb[2];

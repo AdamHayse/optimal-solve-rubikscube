@@ -28,6 +28,10 @@ static NODE scrambled;
 
 void test_heuristic(void) {
 
+  cdatabase = (uint8_t*)malloc(C_DB_SIZE);
+  e1database = (uint8_t*)malloc(E_DB_SIZE);
+  e2database = (uint8_t*)malloc(E_DB_SIZE);
+
   // Load databases.
   load_cdb(cdatabase);
   load_edbs(e1database, e2database);

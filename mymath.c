@@ -6,7 +6,7 @@
 #include "mymath.h"
 
 // Power with O(1) time efficiency.
-const int two_to_the[9] = {1, 2, 4, 8, 16, 32, 64, 128, 256};
+const int two_to_the[10] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512};
 const unsigned three_to_the[8] = {1, 3, 9, 27, 81, 243, 729, 2187};
 
 // Factorial with O(1) time efficiency.
