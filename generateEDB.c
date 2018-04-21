@@ -84,8 +84,12 @@ int main(void) {
 
     #if TRACKED_EDGES > 5
     pthread_t t[8];
-    for (int i=0; i<8; i++)
-      pthread_create(&t[i], NULL, multiBFS, (void*)(E_DB_SIZE/8*i));
+    int offset[8];
+    for (int i=0; i<8; i++) {
+      offset[i] = i;
+      pthread_create(&t[i], NULL, multiBFS, (void*)(offset+i));
+
+    }
     void* retval[8];
     for (int i=0; i<8; i++)
       pthread_join(t[i], &retval[i]);
@@ -128,10 +132,11 @@ int main(void) {
 }
 
 #if TRACKED_EDGES > 5
-void *multiBFS(void *dboffset) {
+void *multiBFS(void *offset) {
   uint64_t *total = (uint64_t*)malloc(sizeof(uint64_t));
+  uint64_t dboffset = *((int*)offset);
   *total = 0;
-  for (uint64_t i=(uint64_t)dboffset; i<(uint64_t)dboffset+E_DB_SIZE/8; i++) {
+  for (uint64_t i=dboffset*E_DB_SIZE/8; i<(dboffset+1)*E_DB_SIZE/8; i++) {
     if (database[i]>>4 == depth) {
       FIND_COMB(i*2, comb);
       breadth_first_search();

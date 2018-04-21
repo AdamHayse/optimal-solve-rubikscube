@@ -26,7 +26,7 @@ CFLAGS ?=-std=c99 -Wall -Wextra -pedantic -O2 -g
 all: generateCDB testscrambles6 testscrambles7 testscrambles8 testbijective6 testbijective7 testbijective8 IDAstar6 IDAstar7 generateEDB1_6 generateEDB2_6 generateEDB1_7 generateEDB2_7 generateEDB1_8 generateEDB2_8 generateEDB1_9
 
 generateEDB1_6: generateEDB.c moves.c edatabase.c mymath.c database.c
-	gcc -D HALF=1 -D TRACKED_EDGES=6 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
+	gcc -pthread -D HALF=1 -D TRACKED_EDGES=6 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
 
 generateEDB1_7: generateEDB.c moves.c edatabase.c mymath.c database.c
 	gcc -D HALF=1 -D TRACKED_EDGES=7 generateEDB.c moves.c edatabase.c mymath.c database.c $(CFLAGS) -o $@
