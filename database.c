@@ -2,10 +2,10 @@
 #include "database.h"
 
 atomic_ullong fill_amount = 0;
-double fill_percent = -0.01;
+double fill_percent = -0.00001;
 
 void update_percent(void) {
-  fill_percent += 0.01;
-  printf("\rDatabase generation %-.0lf%%", fill_percent*100);
+  fill_percent += 0.00001;
+  printf("\rDatabase generation %-.3lf%%", fill_percent*100);
   fflush(stdout);
 }

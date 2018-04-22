@@ -43,6 +43,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <pthread.h>
+#include <stdatomic.h>
 #include "moves.h"
 #include "edatabase.h"
 
@@ -50,7 +51,7 @@
   #define NUM_THREADS 1
 #endif
 
-static uint8_t *database;
+static atomic_uchar *database;
 static uint8_t comb[NUM_THREADS][NUM_EDGES];
 static uint8_t temp[NUM_THREADS][NUM_EDGES];
 static unsigned depth;
@@ -62,7 +63,7 @@ static void write_DB(void);
 int main(void) {
 
   // Get memory for the database.
-  if ((database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
+  if ((database=(atomic_uchar*)malloc(E_DB_SIZE)) == NULL) {
     perror("Not enough memory for database.\n");
     exit(1);
   }
@@ -98,7 +99,7 @@ int main(void) {
       pthread_join(t[i], &retval[i]);
     for (int i=0; i<NUM_THREADS; i++) {
       hvalues[depth] += *((uint64_t*)retval[i]);
-     // free(retval[i]);
+     // free((uint64_t*)retval[i]);
     }
     if (hvalues[depth] == 0)
       done = 1;
@@ -127,7 +128,7 @@ int main(void) {
   // Write database to a file.
   write_DB();
 
-  printf("\rDatabase generation 100%%\nDone.\n");
+  printf("\rDatabase generation 100%%   \nDone.\n");
 
   // Print table of heuristic values.
   for (unsigned i=0; i<depth-1; i++)
@@ -176,9 +177,9 @@ void breadth_first_search(int offset) {
         else
           database[add] = database[add] & (((depth+1) << 4) | 0x0F);
 
-        // Increase fill amount.
+        // Increase fill amount (atomic).
         fill_amount++;
-        if ((double)fill_amount / (E_DB_SIZE * 2) >= fill_percent + .01)
+        if ((double)fill_amount / (E_DB_SIZE * 2) >= fill_percent + .00001)
           update_percent();
       }
     }
@@ -194,15 +195,13 @@ void write_DB(void) {
     exit(1);
   }
 
-  int i=0;
   int64_t amount = 0, remain = E_DB_SIZE;
-  while ((amount=write(fd, database + E_DB_SIZE - remain, (remain>SSIZE_MAX) ? SSIZE_MAX : remain)) != remain) {
+  while ((amount=write(fd, database + E_DB_SIZE - remain, (remain>1048576) ? 1048576 : remain)) != remain) {
     if (amount == -1) {
       perror("Problem writing to file.\n");
       exit(1);
     }
     remain -= amount;
-    i++;
   }
 
   if (close(fd) == -1) {
