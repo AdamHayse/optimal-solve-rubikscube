@@ -108,7 +108,7 @@ int main(void) {
     done = 1;
     for (uint64_t i=0; i<E_DB_SIZE; i++) {
 
-      if (database[i]>>4 == depth) {
+      if ((unsigned char)(database[i]>>4) == depth) {
         FIND_COMB(i*2, comb[0]);
         breadth_first_search(0);
         hvalues[depth]++;
@@ -124,15 +124,15 @@ int main(void) {
     depth++;
     #endif
   }
-
+  printf("\rDatabase generation: 100%%   \n");
   // Write database to a file.
   write_DB();
-
-  printf("\rDatabase generation 100%%   \nDone.\n");
 
   // Print table of heuristic values.
   for (unsigned i=0; i<depth-1; i++)
     printf("%2u move to solve:  %lu\n", i, hvalues[i]);
+
+  printf("Done.\n");
 }
 
 #if NUM_THREADS > 1
@@ -188,10 +188,11 @@ void breadth_first_search(int offset) {
 
 void write_DB(void) {
 
+  printf("Writing to file: 0%%");
   // Write database to a file.
   int fd;
   if ((fd=creat("pattern_databases/edges"FILENAME"_"TRACKED_NAME".patdb", 0644)) == -1) {
-    perror("\nUnable to create file\n");
+    perror("Unable to create file\n");
     exit(1);
   }
 
@@ -202,10 +203,12 @@ void write_DB(void) {
       exit(1);
     }
     remain -= amount;
+    printf("\rWriting to file: %-.0lf%%", (1.0-(double)remain/E_DB_SIZE) * 100);
   }
 
   if (close(fd) == -1) {
-    perror("\nThere was a problem closing the file.\n");
+    perror("There was a problem closing the file.\n");
     exit(1);
   }
+    printf("\rWriting to file: 100%%\n");
 }

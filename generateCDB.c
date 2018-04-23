@@ -103,7 +103,7 @@ int main(void) {
 
   // Print table of heuristic values.
   for (unsigned i=0; i<depth-1; i++)
-    printf("%2u move to solve:  %lu\n", i, hvalues[i]);
+    printf("%2u move to solve:  %u\n", i, hvalues[i]);
 }
 
 void breadth_first_search(void) {
