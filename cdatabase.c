@@ -71,18 +71,20 @@ void C_decode_index(unsigned index, uint8_t *comb) {
 // Load corners database into array of size C_DB_SIZE pointed to by cdb.
 void load_cdb(uint8_t *cdb) {
   int fd;
-  int amount;
+  int amount, remain;
 
   // Load corners database
   if ((fd = open("pattern_databases/corners.patdb", O_RDONLY)) == -1) {
     perror("Could not open corners.patdb");
     exit(1);
   }
-  while ((amount=read(fd, cdb, 1048576)) != 0) {
+  remain = C_DB_SIZE;
+  while ((amount=read(fd, cdb+C_DB_SIZE-remain, 1048576)) != 0) {
     if (amount == -1) {
       perror("Problem reading corners.patdb");
       exit(1);
     }
+    remain -= amount;
   }
   if (close(fd) == -1) {
     perror("Problem closing corners.patdb");

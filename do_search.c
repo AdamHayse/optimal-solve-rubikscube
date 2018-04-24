@@ -1,5 +1,5 @@
 #include "IDAstar.h"
 
-int main(void) {
-  IDAstar();
+int main(int ac, char *av[]) {
+  IDAstar(av);
 }

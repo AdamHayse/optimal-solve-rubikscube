@@ -142,18 +142,20 @@ void E2_decode_index(uint64_t index, uint8_t *comb) {
 // Load edge databases into arrays of size E_DB_SIZE pointed to by edb1 and edb2.
 void load_edbs(uint8_t *edb1, uint8_t *edb2) {
   int fd;
-  int amount;
+  int64_t amount, remain;
 
   // Load edge database 1
   if ((fd = open("pattern_databases/edges1_" TRACKED_NAME ".patdb", O_RDONLY)) == -1) {
     perror("Could not open edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
-  while ((amount=read(fd, edb1, 1048576)) != 0) {
+  remain = E_DB_SIZE;
+  while ((amount=read(fd, edb1+E_DB_SIZE-remain, 1048576)) != 0) {
     if (amount == -1) {
       perror("Problem reading edges1_" TRACKED_NAME ".patdb");
       exit(1);
     }
+    remain -= amount;
   }
   if (close(fd) == -1) {
     perror("Problem closing edges1_" TRACKED_NAME ".patdb");
@@ -165,11 +167,13 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
     perror("Could not open edges2_" TRACKED_NAME ".patdb");
     exit(1);
   }
-  while ((amount=read(fd, edb2, 1048576)) != 0) {
+  remain = E_DB_SIZE;
+  while ((amount=read(fd, edb2+E_DB_SIZE-remain, 1048576)) != 0) {
     if (amount == -1) {
       perror("Problem reading edges2_" TRACKED_NAME ".patdb");
       exit(1);
     }
+    remain -= amount;
   }
   if (close(fd) == -1) {
     perror("Problem closing edges2_" TRACKED_NAME ".patdb");

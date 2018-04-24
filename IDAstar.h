@@ -14,7 +14,7 @@ typedef struct node {
   uint8_t moves[20];  // Moves performed to reach this node
 } NODE;
 
-void IDAstar(void);
+void IDAstar(char *av[]);
 
 // Recursive search function
 unsigned search(NODE *node, unsigned g, unsigned threshold);
@@ -26,10 +26,17 @@ NODE* next_nodes(NODE *node);
 uint8_t maxh(uint8_t c, uint8_t e1, uint8_t e2);
 
 // Get scramble from the user.
-void get_scramble(void);
+void do_scramble(void);
 
 // Print a move.
-void printmove(uint8_t move);
+void print_move(uint8_t move);
+
+void add_move(uint8_t move);
+
+void random_scramble(void);
+
+// Returns the number of moves performed.
+int do_moves(void);
 
 extern uint8_t *cdatabase;
 extern uint8_t *e1database;

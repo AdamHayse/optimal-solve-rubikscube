@@ -1,8 +1,19 @@
+// A good portion of this program is currently spaghetti, but it works.  Will fix.
+
+// ./IDAstar7 -g (Place to store scrambles) (length of every scramble) (number of scrambles to generate)
+// Example call to generate 1000 scrambles of size 13 and put them in a file called 13.txt:
+//    ./IDAstar7 -g scrambles/13.txt 13 1000
+
+// ./IDAstar7 (file containing scrambles) (file to write statistic to)
+// Example call to test scrambles:
+//    ./IDAstar7 scrambles/13.txt results/13_7.txt
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <limits.h>
 #include <string.h>
+#include <time.h>
 
 #include "searchmoves.h"
 #include "cdatabase.h"
@@ -13,23 +24,30 @@ uint8_t *cdatabase;
 uint8_t *e1database;
 uint8_t *e2database;
 
+static int gflag = 0;
 static NODE solved;
 static NODE scrambled;
 static uint64_t explored = 0;
+static FILE *fps, *fpr;
+static fpos_t pos;
+static int num_moves, num_scrambles;
+static char scramble[256], tokscramble[256];
 
 // IDA* driver
-void IDAstar(void) {
+void IDAstar(char *av[]) {
+
+  // If generate options selected.
+  if (strcmp(av[1], "-g") == 0) {
+    gflag = 1;
+    num_moves = atoi(av[3]);
+    num_scrambles = atoi(av[4]);
+    srand(time(0));
+  }
 
   // Get memory for the database.
-  if ((cdatabase=(uint8_t*)malloc(C_DB_SIZE)) == NULL) {
-    perror("Not enough memory for database.\n");
-    exit(1);
-  }
-  if ((e1database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
-    perror("Not enough memory for database.\n");
-    exit(1);
-  }
-  if ((e2database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) {
+  if (((cdatabase=(uint8_t*)malloc(C_DB_SIZE)) == NULL) ||
+      ((e1database=(uint8_t*)malloc(E_DB_SIZE)) == NULL) ||
+      ((e2database=(uint8_t*)malloc(E_DB_SIZE)) == NULL)) {
     perror("Not enough memory for database.\n");
     exit(1);
   }
@@ -39,10 +57,22 @@ void IDAstar(void) {
   load_edbs(e1database, e2database);
   initialize_turns();
 
+  // Load scrambles file and create results file if gflag unset.
+  if (!gflag && (((fps=fopen(av[1], "r")) == NULL) || ((fpr=fopen(av[2], "w")) == NULL))) {
+    perror("Couldn't open file");
+    exit(1);
+  }
+  // Create file that will contain list of scrambles if gflag is set.
+  if (gflag && (fpr=fopen(av[2], "w")) == NULL) {
+      perror("Couldn't open file");
+      exit(1);
+   }
 
   while (1) {
+
     // Get solved and scrambled states.
-    get_scramble();
+    do_scramble();
+
     explored = 0;
     // Get initial estimate to solve.
     unsigned threshold = scrambled.h;
@@ -50,7 +80,6 @@ void IDAstar(void) {
     // Search for a solution.
     while (1) {
       length = search(&scrambled, 0, threshold);
-
       if (length == 21) // No solution is greater than 20 moves.
       {
         printf("There was a problem.\n");
@@ -62,11 +91,32 @@ void IDAstar(void) {
     }
 
     // Print solution.
-    for (unsigned i=0; i<threshold; i++)
-      printmove(solved.moves[i]);
-
-    putchar('\n');
-    printf("Explored nodes: %lu\n", explored);
+    if (!gflag) {
+      printf("Solution: ");
+      for (unsigned i=0; i<threshold; i++)
+        print_move(solved.moves[i]);
+      fprintf(fpr, "\t");
+      printf("\n\n");
+      fprintf(fpr, "%u\t%lu\n", threshold, explored);
+    }
+    else {
+      // 
+      if (threshold == num_moves) {
+        num_scrambles--;
+        fprintf(fpr, "%s", scramble);
+        fprintf(fpr, "\n");
+        printf("Good scramble  Remaining: %i\n", num_scrambles);
+        // If no scrambles are left, close file and exit program.
+        if (!num_scrambles) {
+          fclose(fpr);
+          exit(0);
+        }
+      }
+      // 
+      else {
+        printf("Bad scramble  Remaining: %i\n", num_scrambles);
+      }
+    }
   }
 }
 
@@ -125,8 +175,8 @@ uint8_t maxh(uint8_t c, uint8_t e1, uint8_t e2) {
     return e1;
 }
 
-// Get scramble from the user.
-void get_scramble(void) {
+// Scramble the cube.
+void do_scramble(void) {
 
   // Set up solved state node.
   for (int i=0; i<8; i++)
@@ -135,15 +185,60 @@ void get_scramble(void) {
     solved.edges[i] = 2*i;
   solved.h = 0;
 
-  // Get scramble algorithm from user.
-  char scramble[256];
+  // If gflag unset, get scramble algorithm from user.
+  if (!gflag && fgets(scramble, 256, fps) == NULL) {
+    fclose(fps);
+    fclose(fpr);
+    exit(0);
+  }
+  if (!gflag)
+    strcpy(tokscramble,scramble);
+
+  // If gflag set, get random scramble.
+  if (gflag)
+    random_scramble();
+
+  // Scramble the solved cube with scramble algorithm.
+  if (gflag)
+    do_moves();
+  else {
+    num_moves = do_moves();
+    fprintf(fpr, "%s", scramble);
+    printf("Scramble: %s", scramble);
+    fseek(fpr, -1, SEEK_CUR);
+    fprintf(fpr, "\t%u\t", num_moves);
+  }
+}
+
+void print_move(uint8_t move) {
+  switch(move) {
+    case 0:  printf("U "); fprintf(fpr, "U "); break;
+    case 1:  printf("U2 "); fprintf(fpr, "U2 "); break;
+    case 2:  printf("U' "); fprintf(fpr, "U' "); break;
+    case 3:  printf("F "); fprintf(fpr, "F "); break;
+    case 4:  printf("F2 "); fprintf(fpr, "F2 "); break;
+    case 5:  printf("F' "); fprintf(fpr, "F' "); break;
+    case 6:  printf("L "); fprintf(fpr, "L "); break;
+    case 7:  printf("L2 "); fprintf(fpr, "L2 "); break;
+    case 8:  printf("L' "); fprintf(fpr, "L' "); break;
+    case 9:  printf("B "); fprintf(fpr, "B "); break;
+    case 10:  printf("B2 "); fprintf(fpr, "B2 "); break;
+    case 11:  printf("B' "); fprintf(fpr, "B' "); break;
+    case 12:  printf("R "); fprintf(fpr, "R "); break;
+    case 13:  printf("R2 "); fprintf(fpr, "R2 "); break;
+    case 14:  printf("R' "); fprintf(fpr, "R' "); break;
+    case 15:  printf("D "); fprintf(fpr, "D "); break;
+    case 16:  printf("D2 "); fprintf(fpr, "D2 "); break;
+    case 17:  printf("D' "); fprintf(fpr, "D' "); break;
+  }
+}
+
+// Perform moves on scramble string.
+int do_moves(void) {
   NODE states[32];  // Can enter 32 moves.
   states[0] = solved;
-  if (fgets(scramble, 256, stdin) == NULL)
-    exit(0);
-
   // Tokenize user input and perform moves.
-  char* token = strtok(scramble, " \n()[]\t{}");
+  char* token = strtok(tokscramble, " \n()[]\t{}");
   int i=0;
   while (token) {
     if (strcmp(token, "U") == 0)
@@ -190,27 +285,44 @@ void get_scramble(void) {
     i++;
   }
   scrambled = states[i];
+  return i;
 }
 
-void printmove(uint8_t move) {
+void random_scramble(void) {
+  uint8_t moves[20];
+  scramble[0] = '\0';
+  moves[0] = rand()%18;
+  add_move(moves[0]);
+  int i=1;
+  while (i<num_moves) {
+    if (moves[i-1]/3 != (moves[i]=rand()%18)/3) {
+      add_move(moves[i]);
+      i++;
+    }
+  }
+  strcpy(tokscramble, scramble);
+  printf("%s", scramble);
+}
+
+void add_move(uint8_t move) {
   switch(move) {
-    case 0:  printf("U "); break;
-    case 1:  printf("U2 "); break;
-    case 2:  printf("U' "); break;
-    case 3:  printf("F "); break;
-    case 4:  printf("F2 "); break;
-    case 5:  printf("F' "); break;
-    case 6:  printf("L "); break;
-    case 7:  printf("L2 "); break;
-    case 8:  printf("L' "); break;
-    case 9:  printf("B "); break;
-    case 10:  printf("B2 "); break;
-    case 11:  printf("B' "); break;
-    case 12:  printf("R "); break;
-    case 13:  printf("R2 "); break;
-    case 14:  printf("R' "); break;
-    case 15:  printf("D "); break;
-    case 16:  printf("D2 "); break;
-    case 17:  printf("D' "); break;
+    case 0:  strcat(scramble, "U "); break;
+    case 1:  strcat(scramble, "U2 "); break;
+    case 2:  strcat(scramble, "U' "); break;
+    case 3:  strcat(scramble, "F "); break;
+    case 4:  strcat(scramble, "F2 "); break;
+    case 5:  strcat(scramble, "F' "); break;
+    case 6:  strcat(scramble, "L "); break;
+    case 7:  strcat(scramble, "L2 "); break;
+    case 8:  strcat(scramble, "L' "); break;
+    case 9:  strcat(scramble, "B "); break;
+    case 10:  strcat(scramble, "B2 "); break;
+    case 11:  strcat(scramble, "B' "); break;
+    case 12:  strcat(scramble, "R "); break;
+    case 13:  strcat(scramble, "R2 "); break;
+    case 14:  strcat(scramble, "R' "); break;
+    case 15:  strcat(scramble, "D "); break;
+    case 16:  strcat(scramble, "D2 "); break;
+    case 17:  strcat(scramble, "D' "); break;
   }
 }
