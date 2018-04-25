@@ -74,12 +74,12 @@ void load_cdb(uint8_t *cdb) {
   int amount, remain;
 
   // Load corners database
-  if ((fd = open("pattern_databases/corners.patdb", O_RDONLY)) == -1) {
+  if ((fd = open("pattern_databases/corners.patdb", O_RDONLY | O_BINARY)) == -1) {
     perror("Could not open corners.patdb");
     exit(1);
   }
   remain = C_DB_SIZE;
-  while ((amount=read(fd, cdb+C_DB_SIZE-remain, 1048576)) != 0) {
+  while ((amount=read(fd, cdb+C_DB_SIZE-remain, (remain>1048576) ? 1048576 : remain)) != 0) {
     if (amount == -1) {
       perror("Problem reading corners.patdb");
       exit(1);
