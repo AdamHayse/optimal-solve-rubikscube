@@ -38,6 +38,8 @@ void random_scramble(void);
 // Returns the number of moves performed.
 int do_moves(void);
 
+void stop(int sig);
+
 extern uint8_t *cdatabase;
 extern uint8_t *e1database;
 extern uint8_t *e2database;

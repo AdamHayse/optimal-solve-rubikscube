@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <string.h>
 #include <time.h>
+#include <signal.h>
 
 #include "searchmoves.h"
 #include "cdatabase.h"
@@ -35,6 +36,8 @@ static char scramble[256], tokscramble[256];
 
 // IDA* driver
 void IDAstar(char *av[]) {
+
+  signal(SIGINT, stop);
 
   // If generate options selected.
   if (strcmp(av[1], "-g") == 0) {
@@ -63,7 +66,7 @@ void IDAstar(char *av[]) {
     exit(1);
   }
   // Create file that will contain list of scrambles if gflag is set.
-  if (gflag && (fpr=fopen(av[2], "w")) == NULL) {
+  if (gflag && (fpr=fopen(av[2], "a")) == NULL) {
       perror("Couldn't open file");
       exit(1);
    }
@@ -302,6 +305,7 @@ void random_scramble(void) {
   }
   strcpy(tokscramble, scramble);
   printf("%s", scramble);
+  fflush(stdout);
 }
 
 void add_move(uint8_t move) {
@@ -325,4 +329,12 @@ void add_move(uint8_t move) {
     case 16:  strcat(scramble, "D2 "); break;
     case 17:  strcat(scramble, "D' "); break;
   }
+}
+
+void stop(int sig) {
+  if (!gflag)
+    fclose(fps);
+  fclose(fpr);
+  printf("\n");
+  exit(0);
 }
