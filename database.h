@@ -5,6 +5,10 @@
 
 //#define SSIZE_MAX 1048576
 
+#ifndef O_BINARY
+  #define O_BINARY 0
+#endif
+
 // Update percent completion of database fill.
 void update_percent(void);
 

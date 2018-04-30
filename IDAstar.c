@@ -30,7 +30,6 @@ static NODE solved;
 static NODE scrambled;
 static uint64_t explored = 0;
 static FILE *fps, *fpr;
-static fpos_t pos;
 static int num_moves, num_scrambles;
 static char scramble[256], tokscramble[256];
 

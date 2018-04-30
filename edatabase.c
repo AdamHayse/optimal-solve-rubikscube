@@ -145,7 +145,7 @@ void load_edbs(uint8_t *edb1, uint8_t *edb2) {
   int64_t amount, remain;
 
   // Load edge database 1
-  if ((fd = open("pattern_databases/edges1_" TRACKED_NAME ".patdb", O_RDONLY | 0_BINARY)) == -1) {
+  if ((fd = open("pattern_databases/edges1_" TRACKED_NAME ".patdb", O_RDONLY | O_BINARY)) == -1) {
     perror("Could not open edges1_" TRACKED_NAME ".patdb");
     exit(1);
   }
