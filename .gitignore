@@ -1,6 +1,5 @@
 compile_commands.json
 .vscode/
-documents/
 pattern_databases/edges1_6.patdb
 pattern_databases/edges2_6.patdb
 pattern_databases/edges1_7.patdb
