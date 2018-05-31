@@ -4,7 +4,7 @@ This is the repository for source code and documents for my Artificial Intellige
 
 ## License
 
-There is not license.
+There is no license.
 
 ## Getting Started
 
@@ -35,7 +35,7 @@ gcc -D TRACKED_EDGES=8 do_search.c searchmoves.c edatabase.c cdatabase.c mymath.
 Multi-threading can be used to speed up the edge database generation by defining NUM_THREADS in the compile.  For example:
 
 ```
-gcc -D NUM_THREADS=4 -D HALF=1 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c -std=c99 -O2 -o generateEDB1_8
+$ gcc -D NUM_THREADS=4 -D HALF=1 -D TRACKED_EDGES=8 generateEDB.c moves.c edatabase.c mymath.c database.c -std=c99 -O2 -o generateEDB1_8
 ```
 
 ## Generating the Pattern Databases
@@ -52,10 +52,10 @@ Next, generate the edge databases.  I recommend starting with the 2 6 edge datab
 
 ```
 $ ./generateEDB1_6
-$ ./generateEDB1_6
+$ ./generateEDB2_6
 ```
 
-  The 7 and 8 edge databases take up about 256 MB and 2.55 GB each respectively.  If you want to use 8 edge databases for the fastest search, it will require about 5.3 GB of RAM.  The generation of the 8 edge databases also take up to 10 hours each depending on the speed of the computer and the number of threads used.
+  The 7 and 8 edge databases take up about 255 MB and 2.55 GB each respectively.  If you want to use 8 edge databases for the fastest search, it will require about 5.3 GB of RAM.  The generation of the 8 edge databases also take up to 10 hours each depending on the speed of the computer and the number of threads used.
 
 ## Finding Scrambles and their Optimal Solutions
 
@@ -92,5 +92,6 @@ One fun experiment to try is to run IDAstar searches alongside each other.  Run 
 ```
 $ ./IDAstar6 scrambles/11.txt results/11_6.txt
 $ ./IDAstar7 scrambles/11.txt results/11_7.txt
+```
 
 IDAstar7 uses larger databases, so it has a better heuristic to guide its search.  The databases may take a longer time to load into memory, so IDAstar6 will start quickly.  However, once IDAstar7 starts up it will quickly overtake IDAstar6.  This demonstrates how a better heuristic can dampen the horrible time efficiency of an exponential search.
